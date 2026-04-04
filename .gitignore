@@ -1,0 +1,27 @@
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.suo
+*.user
+*.cs.user
+
+
+# Build results
+[Bb]in/
+[Oo]bj/
+Debug/
+Release/
+
+
+# Environment and Secrets
+*.env
+
+
+# Publish Outputs
+[Pp]ublish/
+[Aa]pp[Pp]ackages/
+
+
+# OS-generated files
+Thumbs.db
+.DS_Store
