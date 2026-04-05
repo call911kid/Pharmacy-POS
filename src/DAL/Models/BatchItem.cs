@@ -8,5 +8,15 @@ namespace DAL.Models
 {
     internal class BatchItem
     {
+        public int Id { get; set; }
+        public int BatchId { get; set; }
+        public Batch Batch { get; set; }
+        public int ProductId { get; set; }
+        public Product Product { get; set; }
+        public int QuantityReceived { get; set; }
+        public int QuantityRemaining { get; set; }
+        public DateTime ExpirationDate { get; set; } 
+        public decimal CostPrice { get; set; } 
+        public decimal MandatorySellingPrice { get; set; }
     }
 }

@@ -8,7 +8,11 @@ namespace DAL.Models
 {
     internal class Product
     {
-        
+        public int Id { get; set; }
+        public string Barcode { get; set; }
+        public string Name { get; set; }
+
+        public ICollection<BatchItem> BatchItems { get; set; }
     }
     
 }
