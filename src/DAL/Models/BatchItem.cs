@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Models
 {
-    internal class BatchItem
+    public class BatchItem
     {
         public int Id { get; set; }
         public int BatchId { get; set; }

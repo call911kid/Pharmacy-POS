@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Models
 {
-    internal class Invoice
+    public class Invoice
     {
         public int Id { get; set; }
         public DateTime InvoiceDate { get; set; }
