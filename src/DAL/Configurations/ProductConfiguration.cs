@@ -15,7 +15,7 @@ namespace DAL.Configurations
         {
             builder.HasKey(p => p.Id);
 
-            builder.Property(p => p.Barcode).HasMaxLength(50).IsRequired();
+            builder.Property(p => p.Barcode).HasMaxLength(50);
 
             builder.HasIndex(p => p.Barcode).IsUnique();
 

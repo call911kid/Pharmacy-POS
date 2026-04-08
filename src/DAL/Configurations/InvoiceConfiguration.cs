@@ -17,6 +17,8 @@ namespace DAL.Configurations
 
             builder.Property(i => i.InvoiceDate).IsRequired();
 
+            builder.Property(i => i.Barcode).HasMaxLength(50).IsRequired();
+            
             builder.Property(i => i.TotalAmount).HasColumnType("decimal(18,2)").IsRequired();
 
             builder.Property(i => i.TotalDiscount).HasColumnType("decimal(18,2)").IsRequired();
