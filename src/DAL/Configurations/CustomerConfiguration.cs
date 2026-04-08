@@ -13,7 +13,14 @@ namespace DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<Customer> builder)
         {
-            
+            builder.HasKey(c => c.Id);
+
+            builder.Property(c => c.Name).HasMaxLength(100).IsRequired();
+
+            builder.Property(c => c.Phone).HasMaxLength(20);
+
+            builder.HasIndex(c => c.Phone).IsUnique(false);
+
         }
     }
 }

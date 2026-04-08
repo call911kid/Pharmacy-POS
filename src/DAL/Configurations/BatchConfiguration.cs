@@ -13,7 +13,15 @@ namespace DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<Batch> builder)
         {
-            
+            builder.HasKey(b => b.Id);
+
+            builder.Property(b => b.PurchaseDate).IsRequired();
+
+            builder.HasOne(b => b.Supplier)
+                .WithMany(s => s.Batches)
+                .HasForeignKey(d => d.SupplierId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

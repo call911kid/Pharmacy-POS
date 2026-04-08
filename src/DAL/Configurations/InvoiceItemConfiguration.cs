@@ -13,6 +13,25 @@ namespace DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<InvoiceItem> builder)
         {
+            builder.HasKey(ii => ii.Id);
+
+            builder.Property(ii => ii.Quantity).IsRequired();
+
+            builder.Property(ii => ii.OriginalPrice).HasColumnType("decimal(18,2)").IsRequired();
+
+            builder.Property(ii => ii.DiscountedPrice).HasColumnType("decimal(18,2)");
+
+
+
+            builder.HasOne(ii => ii.Invoice)
+                .WithMany(i => i.InvoiceItems)
+                .HasForeignKey(ii => ii.InvoiceId);
+
+
+            builder.HasOne(ii => ii.BatchItem)
+                .WithMany()
+                .HasForeignKey(ii => ii.BatchItemId)
+                .OnDelete(DeleteBehavior.Restrict);
             
         }
     }
