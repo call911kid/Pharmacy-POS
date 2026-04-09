@@ -15,6 +15,7 @@ Release/
 
 # Environment and Secrets
 *.env
+appsettings.json
 
 
 # Publish Outputs
