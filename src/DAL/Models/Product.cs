@@ -12,7 +12,12 @@ namespace DAL.Models
         public string Barcode { get; set; }
         public string Name { get; set; }
 
-        public ICollection<BatchItem> BatchItems { get; set; }
+        public virtual ICollection<BatchItem> BatchItems { get; set; }
+
+        public Product()
+        {
+            BatchItems = new HashSet<BatchItem>();
+        }
     }
     
 }

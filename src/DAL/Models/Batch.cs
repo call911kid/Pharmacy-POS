@@ -10,12 +10,13 @@ namespace DAL.Models
     {
         public int Id { get; set; }
         public DateTime PurchaseDate { get; set; }
-
         public int SupplierId { get; set; }
-        public Supplier Supplier { get; set; }
+        public virtual Supplier Supplier { get; set; }
+        public virtual ICollection<BatchItem> BatchItems { get; set; }
 
-        public ICollection<BatchItem> BatchItems { get; set; }
-
-        
+        public Batch()
+        {
+            BatchItems = new HashSet<BatchItem>();
+        }
     }
 }
