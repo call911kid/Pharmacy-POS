@@ -20,7 +20,7 @@ namespace UI.Utils
             using var qrGenerator = new QRCoder.QRCodeGenerator();
             using var data = qrGenerator.CreateQrCode(url, QRCoder.QRCodeGenerator.ECCLevel.Q);
             using var qrCode = new QRCoder.QRCode(data);
-            return qrCode.GetGraphic(4);
+            return qrCode.GetGraphic(7);
         }
 
         private static string GetActiveLocalIPAddress()

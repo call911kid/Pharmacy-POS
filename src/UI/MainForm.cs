@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using QRCoder;
 using UI.Events;
+using UI.Forms;
 using UI.Utils;
 
 namespace UI
@@ -12,21 +13,16 @@ namespace UI
 
         public MainForm(ScannerEventBus eventBus)
         {
-            
+
             InitializeComponent();
-
-
-            string url = ScannerConnectionProvider.GetMobileScannerUrl();
-            picQRCode.Image = ScannerConnectionProvider.GenerateLinkQRCode(url);
-
 
             _eventBus = eventBus;
             _eventBus.BarcodeScanned += OnBarcodeScanned;
-            
-            
+
+
         }
 
-        
+
 
         private void OnBarcodeScanned(object sender, string barcode)
         {
@@ -42,9 +38,15 @@ namespace UI
 
         private void UpdateUI(string barcode)
         {
-            lblCurrentBarcode.Text = barcode;
-            string logEntry = $"{DateTime.Now:HH:mm:ss} - Scanned: {barcode}";
-            lstBarcodeLogs.Items.Insert(0, logEntry);
+            //lblCurrentBarcode.Text = barcode;
+            //string logEntry = $"{DateTime.Now:HH:mm:ss} - Scanned: {barcode}";
+            //lstBarcodeLogs.Items.Insert(0, logEntry);
+        }
+
+        private void scannerBtn_Click(object sender, EventArgs e)
+        {
+            var scannerForm = new ScannerConnectionForm();
+            scannerForm.Show();
         }
     }
 }
