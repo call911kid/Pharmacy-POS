@@ -10,6 +10,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IBatchService, BatchService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<ISupplierService, SupplierService>();
+
 
         return services;
     }
