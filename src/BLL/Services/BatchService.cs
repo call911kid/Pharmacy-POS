@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.DTOs.Batch;
+using BLL.DTOs.BatchItem;
+using BLL.Exceptions;
 using BLL.Interfaces;
 using DAL.Interfaces;
+using DAL.Models;
 
 namespace BLL.Services
 {
@@ -16,27 +19,94 @@ namespace BLL.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public Task<IEnumerable<BatchSummaryDto>> GetBatchSummariesAsync()
+        public async Task<IEnumerable<BatchSummaryDto>> GetBatchSummariesAsync(int pageNumber, int pageSize)
         {
-            throw new NotImplementedException();
+            var batches = await _unitOfWork.Batches.GetAllAsync(pageNumber, pageSize);
+
+            return batches.Select(batch => new BatchSummaryDto
+            {
+                Id = batch.Id,
+                SupplierId = batch.SupplierId,
+                SupplierName = batch.Supplier.Name,
+                PurchaseDate = batch.PurchaseDate
+                
+            }).ToList();
         }
 
-        public async Task<BatchDto> GetBatchById(int batchId)
+        public async Task<BatchDto> GetBatchByIdAsync(int batchId)
         {
             var batch =await _unitOfWork.Batches.GetByIdAsync(batchId)
-                ?? throw new KeyNotFoundException($"Batch with ID {batchId} not found.");
+                ?? throw new EntityNotFoundException($"Batch with ID {batchId} not found.");
 
             return new BatchDto
             {
-                // Map properties from batch to BatchDto here
+                Id = batch.Id,
+                SupplierId = batch.SupplierId,
+                PurchaseDate = batch.PurchaseDate,
+
+                
+                Items = batch.BatchItems.Select(item => new BatchItemDto
+                {
+                    Id = item.Id,
+                    BatchId = item.BatchId,
+                    ProductId = item.ProductId,
+                    QuantityReceived = item.QuantityReceived,
+                    QuantityRemaining = item.QuantityRemaining,
+                    ExpirationDate = item.ExpirationDate,
+                    CostPrice = item.CostPrice,
+                    MandatorySellingPrice = item.MandatorySellingPrice
+                }).ToList()
+            };
+        }
+
+
+        public async Task AddBatchAsync(CreateBatchDto createBatchDto)
+        {
+            var batch = new Batch
+            {
+                SupplierId = createBatchDto.SupplierId,
+                PurchaseDate = DateTime.Now,
+                
+                BatchItems = createBatchDto.BatchItems.Select(item => new BatchItem
+                {
+                    ProductId = item.ProductId,
+                    QuantityReceived = item.QuantityReceived,
+                    
+                    QuantityRemaining = item.QuantityReceived,
+
+                    ExpirationDate = item.ExpirationDate,
+                    CostPrice = item.CostPrice,
+                    MandatorySellingPrice = item.MandatorySellingPrice
+                }).ToList()
             };
 
+            await _unitOfWork.Batches.AddAsync(batch);
 
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public Task AddBatchAsync(CreateBatchDto createBatchDto)
+        public async Task DeleteBatchAsync(int batchId)
         {
-            throw new NotImplementedException();
+            var batch = await _unitOfWork.Batches.GetByIdAsync(batchId)
+                ?? throw new EntityNotFoundException($"Batch with ID {batchId} not found.");
+
+            _unitOfWork.Batches.Delete(batch);
+
+            await _unitOfWork.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<BatchSummaryDto>> GetBatchesBySupplierAsync(int supplierId)
+        {
+            var batches = await _unitOfWork.Batches.FindAsync(b => b.SupplierId == supplierId);
+
+            return batches.Select(batch => new BatchSummaryDto
+            {
+                Id = batch.Id,
+                SupplierId = batch.SupplierId,
+                PurchaseDate = batch.PurchaseDate
+            }).ToList();
+        }
+
+
     }
 }
