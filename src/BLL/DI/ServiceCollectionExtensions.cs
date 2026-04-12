@@ -9,7 +9,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBLLServices(this IServiceCollection services)
     {
         services.AddScoped<IBatchService, BatchService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
 
         return services;
     }
+    
 }

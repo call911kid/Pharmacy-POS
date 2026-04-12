@@ -19,6 +19,10 @@ namespace UI.Exceptions
                 case EntityNotFoundException e:
                     ShowError(e.Message);
                     break;
+                
+                case InsufficientStockException e:
+                    ShowError(e.Message);
+                    break;
 
                 default:
                     ShowError("An unexpected error occurred. Please try again later.");
