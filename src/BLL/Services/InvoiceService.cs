@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using BLL.Exceptions;
 using UI.Exceptions;
 using BLL.DTOs.InvoiceItem;
+using System.Net.NetworkInformation;
+using Common.Enums;
 namespace BLL.Services
 {
 
@@ -29,6 +31,7 @@ namespace BLL.Services
             {
                 CustomerId = invoiceDto.CustomerId,
                 InvoiceDate = invoiceDto.InvoiceDate,
+                Status = InvoiceStatus.Finalized,
                 InvoiceItems = new List<InvoiceItem>()
             };
             var modifiedBatches = new List<(BatchItem batch, int subtractedQuantity)>();
@@ -39,7 +42,7 @@ namespace BLL.Services
                 foreach (var itemDto in invoiceDto.InvoiceItems)
                 {
                     var batchItem = await _unitOfWork.BatchItems.GetByIdAsync(itemDto.BatchItemId);
-                    //the error in line 42 
+                    
                     if (batchItem == null) throw new Exception($"Batch {itemDto.BatchItemId} not found");
                     if (batchItem.QuantityRemaining < itemDto.Quantity) throw new InsufficientStockException($"Batch {itemDto.BatchItemId} does not have enough quantity. Requested: {itemDto.Quantity}, Available: {batchItem.QuantityRemaining}");
 
@@ -89,6 +92,7 @@ namespace BLL.Services
             {
                 Id = inv.Id,
                 CustomerId = inv.CustomerId,
+                Status = inv.Status.ToString(),
                 InvoiceDate = inv.InvoiceDate,
                 TotalAmount = inv.TotalAmount,
                 InvoiceItems = inv.InvoiceItems?.Select(ii => new InvoiceItemDto

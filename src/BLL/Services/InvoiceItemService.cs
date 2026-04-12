@@ -1,18 +1,22 @@
 ﻿using BLL.DTOs.InvoiceItem;
 using BLL.Interfaces;
 using DAL.Interfaces;
-using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BLL.DTOs.InvoiceItem;
+
 namespace BLL.Services
 {
     public class InvoiceItemService : IInvoiceItemService
     {
         private readonly IUnitOfWork _unitOfWork;
+
+        public InvoiceItemService(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
         public async Task<InvoiceItemDto?> GetInvoiceItemByIdAsync(int id)
         {
             var item = await _unitOfWork.InvoiceItems.GetByIdAsync(id);

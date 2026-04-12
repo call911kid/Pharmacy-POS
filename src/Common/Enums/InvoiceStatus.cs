@@ -8,8 +8,12 @@ namespace Common.Enums
 {
     public enum InvoiceStatus
     {
+
         Draft,
         Finalized,
-        Cancelled
+        Cancelled,
+        Returned,
+        PartillyReturned,
+        PendingPayment,
     }
 }

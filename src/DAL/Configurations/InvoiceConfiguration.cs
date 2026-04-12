@@ -29,7 +29,11 @@ namespace DAL.Configurations
                 .WithMany(c => c.Invoices)
                 .HasForeignKey(i => i.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
-
+            
+            builder.Property(i => i.Status)
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .IsRequired();
 
         }
     }
