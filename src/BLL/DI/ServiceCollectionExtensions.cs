@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBatchService, BatchService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
         services.AddScoped<ISupplierService, SupplierService>();
+        services.AddScoped<ICustomerService, CustomerService>();
 
 
         return services;
