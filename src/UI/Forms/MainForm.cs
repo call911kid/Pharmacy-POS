@@ -9,20 +9,19 @@ namespace UI
     public partial class MainForm : Form
     {
         private readonly ScannerEventBus _eventBus;
-        private readonly Dictionary<string, Button> _navButtons = new();
+        private readonly Dictionary<string, RoundedButton> _navButtons = new();
         private readonly Dictionary<string, ShellModuleView> _views = new();
         private TextBox searchTextBox = null!;
         private Label lblSectionTitle = null!;
         private Label lblSectionSubtitle = null!;
-        private Label lblScannerStatusValue = null!;
-        private Label lblLastScanValue = null!;
         private Panel contentPanel = null!;
-        private Button btnDashboard = null!;
-        private Button btnPos = null!;
-        private Button btnInventory = null!;
-        private Button btnSuppliers = null!;
-        private Button btnCustomers = null!;
-        private Button btnAdjustments = null!;
+        private RoundedButton btnDashboard = null!;
+        private RoundedButton btnPos = null!;
+        private RoundedButton btnInventory = null!;
+        private RoundedButton btnSuppliers = null!;
+        private RoundedButton btnCustomers = null!;
+        private RoundedButton btnAdjustments = null!;
+        private RoundedButton btnScanner = null!;
 
         public MainForm(ScannerEventBus eventBus)
         {
@@ -35,7 +34,6 @@ namespace UI
             ApplyTheme();
             BuildViewRegistry();
             SwitchView("dashboard");
-            UpdateScannerStatus("Waiting for scanner activity");
         }
 
         private void ApplyTheme()
@@ -118,12 +116,12 @@ namespace UI
             btnCustomers = CreateNavButton("Customers");
             btnAdjustments = CreateNavButton("Stock Adjustments");
 
-            sidebarLayout.Controls.Add(CreateNavRow(btnDashboard, SectionIconKind.Dashboard), 0, 1);
-            sidebarLayout.Controls.Add(CreateNavRow(btnPos, SectionIconKind.Register), 0, 2);
-            sidebarLayout.Controls.Add(CreateNavRow(btnInventory, SectionIconKind.Inventory), 0, 3);
-            sidebarLayout.Controls.Add(CreateNavRow(btnSuppliers, SectionIconKind.Supplier), 0, 4);
-            sidebarLayout.Controls.Add(CreateNavRow(btnCustomers, SectionIconKind.Customer), 0, 5);
-            sidebarLayout.Controls.Add(CreateNavRow(btnAdjustments, SectionIconKind.Adjustment), 0, 6);
+            sidebarLayout.Controls.Add(CreateNavRow(btnDashboard), 0, 1);
+            sidebarLayout.Controls.Add(CreateNavRow(btnPos), 0, 2);
+            sidebarLayout.Controls.Add(CreateNavRow(btnInventory), 0, 3);
+            sidebarLayout.Controls.Add(CreateNavRow(btnSuppliers), 0, 4);
+            sidebarLayout.Controls.Add(CreateNavRow(btnCustomers), 0, 5);
+            sidebarLayout.Controls.Add(CreateNavRow(btnAdjustments), 0, 6);
 
             sidebarCard.Controls.Add(sidebarLayout);
 
@@ -194,74 +192,35 @@ namespace UI
             };
             lblSectionSubtitle = new Label
             {
-                AutoSize = true,
+                AutoSize = false,
                 Font = UiPalette.BodyFont(10.2F),
                 ForeColor = UiPalette.TextMuted,
                 Text = "Section summary",
-                Location = new Point(0, 42)
+                Location = new Point(0, 42),
+                MaximumSize = new Size(600, 0),
+                Size = new Size(600, 40)
             };
             titleBlockPanel.Controls.Add(lblSectionTitle);
             titleBlockPanel.Controls.Add(lblSectionSubtitle);
 
-            var actionPanel = new Panel { Dock = DockStyle.Fill };
-            var scannerStatusPanel = new RoundedPanel
+            var actionPanel = new Panel
             {
-                Location = new Point(0, 0),
-                Size = new Size(234, 76),
-                Padding = new Padding(14),
-                CornerRadius = 10,
-                BorderColor = UiPalette.Border,
+                Dock = DockStyle.Fill,
                 BackColor = UiPalette.Surface
             };
-            scannerStatusPanel.Controls.Add(new Label
+            btnScanner = new RoundedButton
             {
-                AutoSize = true,
-                Font = UiPalette.BodyFont(9F),
-                ForeColor = UiPalette.TextMuted,
-                Text = "Status",
-                Location = new Point(15, 16)
-            });
-            lblScannerStatusValue = new Label
-            {
-                AutoEllipsis = true,
-                Font = UiPalette.BodyFont(9F, FontStyle.Bold),
-                ForeColor = UiPalette.TextPrimary,
-                Text = "--",
-                Location = new Point(91, 16),
-                Size = new Size(127, 20)
-            };
-            scannerStatusPanel.Controls.Add(lblScannerStatusValue);
-            scannerStatusPanel.Controls.Add(new Label
-            {
-                AutoSize = true,
-                Font = UiPalette.BodyFont(9F),
-                ForeColor = UiPalette.TextMuted,
-                Text = "Last scan",
-                Location = new Point(15, 42)
-            });
-            lblLastScanValue = new Label
-            {
-                AutoEllipsis = true,
-                Font = UiPalette.BodyFont(9F, FontStyle.Bold),
-                ForeColor = UiPalette.TextPrimary,
-                Text = "--",
-                Location = new Point(91, 42),
-                Size = new Size(127, 20)
-            };
-            scannerStatusPanel.Controls.Add(lblLastScanValue);
-
-            var btnScanner = new RoundedButton
-            {
-                Location = new Point(248, 16),
+                Anchor = AnchorStyles.None,
+                Location = new Point(124, 16),
                 Size = new Size(160, 42),
                 Text = "Scanner QR",
                 ButtonColor = UiPalette.Primary,
                 BorderColor = UiPalette.Primary,
-                TextColor = Color.White
+                TextColor = Color.White,
+                CornerRadius = 10
             };
             btnScanner.Click += btnScanner_Click;
 
-            actionPanel.Controls.Add(scannerStatusPanel);
             actionPanel.Controls.Add(btnScanner);
 
             headerLayout.Controls.Add(titleBlockPanel, 0, 0);
@@ -295,35 +254,32 @@ namespace UI
             ResumeLayout();
         }
 
-        private static Button CreateNavButton(string text)
+        private static RoundedButton CreateNavButton(string text)
         {
-            return new Button
+            return new RoundedButton
             {
-                BackColor = UiPalette.Surface,
-                FlatStyle = FlatStyle.Flat,
                 Font = UiPalette.BodyFont(10.5F, FontStyle.Bold),
-                ForeColor = UiPalette.TextMuted,
                 Text = text,
                 TextAlign = ContentAlignment.MiddleLeft,
-                Padding = new Padding(44, 0, 0, 0),
-                Size = new Size(268, 56)
+                Padding = new Padding(18, 0, 0, 0),
+                Dock = DockStyle.Fill,
+                CornerRadius = 10,
+                ButtonColor = UiPalette.Surface,
+                BorderColor = UiPalette.Border,
+                TextColor = UiPalette.TextMuted
             };
         }
 
-        private static Panel CreateNavRow(Button button, SectionIconKind iconKind)
+        private static Panel CreateNavRow(RoundedButton button)
         {
-            button.FlatAppearance.BorderSize = 0;
-
-            var row = new Panel { Dock = DockStyle.Fill };
-            var icon = new SectionIcon
+            var row = new Panel
             {
-                Kind = iconKind,
-                AccentColor = UiPalette.Primary,
-                Location = new Point(16, 19)
+                Dock = DockStyle.Fill,
+                BackColor = UiPalette.Surface,
+                Padding = new Padding(0, 4, 12, 4)
             };
 
             row.Controls.Add(button);
-            row.Controls.Add(icon);
             return row;
         }
 
@@ -345,12 +301,6 @@ namespace UI
                     "Use the top search box for patient, barcode, supplier, or batch lookup.",
                     "Keep the register flow focused on the next sale and remove non-essential clicks.",
                     "Treat expiry and stock discrepancies as visible operational tasks, not hidden reports."
-                },
-                new[]
-                {
-                    new ShellModuleStat("Counter status", "Ready", "Register, search, and scanner actions stay within one shell."),
-                    new ShellModuleStat("Clinical tone", "Light mode", "High-contrast surfaces and muted chrome keep the data readable."),
-                    new ShellModuleStat("Next build", "POS first", "The register can be connected next without replacing the frame.")
                 },
                 new ShellModuleLedger(
                     "Shift snapshot",
@@ -380,12 +330,6 @@ namespace UI
                     "Reserve the largest area for the cart ledger and totals scan.",
                     "Use the scanner button as a side action, never the center of the workflow."
                 },
-                new[]
-                {
-                    new ShellModuleStat("Customer gate", "Required", "The cashier should not finalize until patient data is valid."),
-                    new ShellModuleStat("Pricing source", "Batch lot", "Prices belong to the selected lot, not to the product record."),
-                    new ShellModuleStat("Visual focus", "Ledger", "Quantities and totals should always dominate the eye path.")
-                },
                 new ShellModuleLedger(
                     "Register preview",
                     "Styled as a clean pharmacy ledger with right-aligned quantity and price columns.",
@@ -413,12 +357,6 @@ namespace UI
                     "Keep batch header details separate from the item grid.",
                     "Make expiry date and selling price impossible to miss during entry.",
                     "Show supplier context and current stock impact in the same workspace."
-                },
-                new[]
-                {
-                    new ShellModuleStat("Batch rule", "One supplier", "Each receiving document should belong to one supplier only."),
-                    new ShellModuleStat("Lot data", "Mandatory", "Expiry, cost, quantity, and sale price define usable stock."),
-                    new ShellModuleStat("Stock logic", "FIFO ready", "Clean lot entry supports later batch selection.")
                 },
                 new ShellModuleLedger(
                     "Incoming batch preview",
@@ -448,12 +386,6 @@ namespace UI
                     "Keep contact details, recent deliveries, and outstanding follow-up in one place.",
                     "Preserve plenty of spacing so the form feels trustworthy rather than crowded."
                 },
-                new[]
-                {
-                    new ShellModuleStat("Primary key", "Phone", "Supplier phone is the fastest practical lookup during intake."),
-                    new ShellModuleStat("Delete safety", "Guarded", "Linked suppliers should not be removed casually."),
-                    new ShellModuleStat("Receiving link", "Direct", "This view should feed the batch screen without duplicate entry.")
-                },
                 new ShellModuleLedger(
                     "Supplier ledger preview",
                     "Contacts and delivery context should remain easy to skim in a bright clinical layout.",
@@ -481,12 +413,6 @@ namespace UI
                     "Keep create and edit forms compact with a clean validation tone.",
                     "Expose invoice history without taking the cashier out of context."
                 },
-                new[]
-                {
-                    new ShellModuleStat("Search pattern", "Phone first", "Fast phone retrieval reduces friction at the register."),
-                    new ShellModuleStat("Validation", "Hard rule", "Customer name and phone remain mandatory before finalization."),
-                    new ShellModuleStat("Returns", "History visible", "Invoice history should be one click away from the patient record.")
-                },
                 new ShellModuleLedger(
                     "Patient ledger preview",
                     "The same table styling can support lookup, selection, and return retrieval.",
@@ -513,12 +439,6 @@ namespace UI
                     "Separate reasons clearly so quantity changes stay auditable.",
                     "Keep before and after quantities aligned for fast review.",
                     "Use this space later for expiries, breakage, and manual corrections."
-                },
-                new[]
-                {
-                    new ShellModuleStat("Reason codes", "Required", "Adjustments should always state why stock changed."),
-                    new ShellModuleStat("Review style", "Ledger", "Right-aligned quantities make discrepancies obvious."),
-                    new ShellModuleStat("Safety scope", "Operational", "This area can later absorb expiry and loss workflows.")
                 },
                 new ShellModuleLedger(
                     "Adjustment ledger preview",
@@ -552,8 +472,6 @@ namespace UI
 
         private void UpdateScannerStatus(string barcode)
         {
-            lblScannerStatusValue.Text = barcode;
-            lblLastScanValue.Text = DateTime.Now.ToString("hh:mm tt");
         }
 
         private void OpenScannerConnection()
@@ -571,14 +489,18 @@ namespace UI
 
             foreach (var navButton in _navButtons.Values)
             {
-                navButton.BackColor = UiPalette.Surface;
-                navButton.ForeColor = UiPalette.TextMuted;
+                navButton.ButtonColor = UiPalette.Surface;
+                navButton.BorderColor = UiPalette.Border;
+                navButton.TextColor = UiPalette.TextMuted;
+                navButton.Invalidate();
             }
 
             if (_navButtons.TryGetValue(key, out var activeButton))
             {
-                activeButton.BackColor = UiPalette.PrimaryMuted;
-                activeButton.ForeColor = UiPalette.Primary;
+                activeButton.ButtonColor = UiPalette.PrimaryMuted;
+                activeButton.BorderColor = UiPalette.PrimaryMuted;
+                activeButton.TextColor = UiPalette.Primary;
+                activeButton.Invalidate();
             }
 
             contentPanel.SuspendLayout();

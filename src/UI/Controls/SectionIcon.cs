@@ -20,8 +20,10 @@ namespace UI.Controls
 
         public SectionIcon()
         {
+            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             DoubleBuffered = true;
             Size = new Size(18, 18);
+            BackColor = Color.Transparent;
         }
 
         protected override void OnPaint(PaintEventArgs e)
