@@ -3,14 +3,17 @@ using UI.Forms;
 using UI.Controls;
 using UI.Theme;
 using UI.Views;
+using BLL.Interfaces;
 
 namespace UI
 {
     public partial class MainForm : Form
     {
         private readonly ScannerEventBus _eventBus;
+        private readonly ISupplierService _supplierService;
         private readonly Dictionary<string, RoundedButton> _navButtons = new();
         private readonly Dictionary<string, ShellModuleView> _views = new();
+        private readonly Dictionary<string, UserControl> _customViews = new();
         private TextBox searchTextBox = null!;
         private Label lblSectionTitle = null!;
         private Label lblSectionSubtitle = null!;
@@ -23,12 +26,13 @@ namespace UI
         private RoundedButton btnAdjustments = null!;
         private RoundedButton btnScanner = null!;
 
-        public MainForm(ScannerEventBus eventBus)
+        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService)
         {
             InitializeComponent();
             BuildShellLayout();
 
             _eventBus = eventBus;
+            _supplierService = supplierService;
             _eventBus.BarcodeScanned += OnBarcodeScanned;
 
             ApplyTheme();
@@ -291,6 +295,7 @@ namespace UI
             _navButtons["suppliers"] = btnSuppliers;
             _navButtons["customers"] = btnCustomers;
             _navButtons["adjustments"] = btnAdjustments;
+            _customViews["suppliers"] = new SuppliersView(_supplierService);
 
             _views["dashboard"] = new ShellModuleView(
                 "Clinical operations overview",
@@ -482,7 +487,18 @@ namespace UI
 
         private void SwitchView(string key)
         {
-            if (!_views.TryGetValue(key, out var view))
+            UserControl? view = null;
+
+            if (_customViews.TryGetValue(key, out var customView))
+            {
+                view = customView;
+            }
+            else if (_views.TryGetValue(key, out var shellView))
+            {
+                view = shellView;
+            }
+
+            if (view is null)
             {
                 return;
             }
@@ -509,8 +525,16 @@ namespace UI
             contentPanel.Controls.Add(view);
             contentPanel.ResumeLayout();
 
-            lblSectionTitle.Text = view.Title;
-            lblSectionSubtitle.Text = view.Subtitle;
+            if (view is ShellModuleView shellModuleView)
+            {
+                lblSectionTitle.Text = shellModuleView.Title;
+                lblSectionSubtitle.Text = shellModuleView.Subtitle;
+            }
+            else
+            {
+                lblSectionTitle.Text = "Suppliers";
+                lblSectionSubtitle.Text = "Create, search, update, and delete supplier records.";
+            }
         }
 
         private void searchTextBox_Enter(object sender, EventArgs e)
