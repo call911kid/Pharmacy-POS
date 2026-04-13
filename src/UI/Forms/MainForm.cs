@@ -11,6 +11,7 @@ namespace UI
     {
         private readonly ScannerEventBus _eventBus;
         private readonly ISupplierService _supplierService;
+        private readonly IBatchService _batchService;
         private readonly Dictionary<string, RoundedButton> _navButtons = new();
         private readonly Dictionary<string, ShellModuleView> _views = new();
         private readonly Dictionary<string, UserControl> _customViews = new();
@@ -26,13 +27,14 @@ namespace UI
         private RoundedButton btnAdjustments = null!;
         private RoundedButton btnScanner = null!;
 
-        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService)
+        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService)
         {
             InitializeComponent();
             BuildShellLayout();
 
             _eventBus = eventBus;
             _supplierService = supplierService;
+            _batchService = batchService;
             _eventBus.BarcodeScanned += OnBarcodeScanned;
 
             ApplyTheme();
@@ -296,6 +298,7 @@ namespace UI
             _navButtons["customers"] = btnCustomers;
             _navButtons["adjustments"] = btnAdjustments;
             _customViews["suppliers"] = new SuppliersView(_supplierService);
+            _customViews["inventory"] = new Views.InventoryBatchesView(_batchService, _supplierService);
 
             _views["dashboard"] = new ShellModuleView(
                 "Clinical operations overview",
