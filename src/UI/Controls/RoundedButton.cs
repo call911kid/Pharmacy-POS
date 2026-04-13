@@ -1,13 +1,18 @@
 using System.Drawing.Drawing2D;
 using UI.Theme;
+using System.ComponentModel;
 
 namespace UI.Controls
 {
     public class RoundedButton : Button
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int CornerRadius { get; set; } = 10;
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color ButtonColor { get; set; } = UiPalette.Primary;
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color BorderColor { get; set; } = UiPalette.Primary;
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color TextColor { get; set; } = Color.White;
 
         public RoundedButton()
