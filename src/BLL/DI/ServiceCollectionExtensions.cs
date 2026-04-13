@@ -1,4 +1,5 @@
 using BLL.Interfaces;
+using BLL.DTOs.Refund;
 using BLL.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IBatchService, BatchService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IRefundService, RefundService>();
         services.AddScoped<ISupplierService, SupplierService>();
         services.AddScoped<ICustomerService, CustomerService>();
 

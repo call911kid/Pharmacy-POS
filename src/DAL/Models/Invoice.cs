@@ -17,6 +17,7 @@ namespace DAL.Models
         public decimal TotalAmount { get; set; } 
         public decimal TotalDiscount { get; set; } 
         public decimal NetAmount { get; set; }
+        public int ReturnedQuantity { get; set; }
         public InvoiceStatus Status { get; set; }
         public virtual ICollection<InvoiceItem> InvoiceItems { get; set; }
 

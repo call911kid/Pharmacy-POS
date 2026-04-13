@@ -21,7 +21,7 @@ namespace DAL.Configurations
 
             builder.Property(ii => ii.DiscountedPrice).HasColumnType("decimal(18,2)");
 
-
+            builder.Property(ii => ii.ReturnedQuantity).IsRequired().HasDefaultValue(0);
 
             builder.HasOne(ii => ii.Invoice)
                 .WithMany(i => i.InvoiceItems)

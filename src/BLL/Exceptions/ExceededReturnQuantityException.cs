@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace BLL.Exceptions
 {
-    public class InsufficientStockException : Exception
+    public class ExceededReturnQuantityException : Exception
     {
-        public InsufficientStockException(string message) : base(message)
+        public ExceededReturnQuantityException(string message) : base(message)
         {
         }
     }

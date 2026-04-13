@@ -13,7 +13,7 @@ namespace Common.Enums
         Finalized,
         Cancelled,
         Returned,
-        PartillyReturned,
+        PartiallyReturned,
         PendingPayment,
     }
 }

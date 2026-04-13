@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace BLL.Exceptions
 {
-    public class InsufficientStockException : Exception
+    public class BatchNotFoundException : Exception
     {
-        public InsufficientStockException(string message) : base(message)
+        public BatchNotFoundException(string message) : base(message)
         {
         }
     }

@@ -23,6 +23,30 @@ namespace UI.Exceptions
                 case InsufficientStockException e:
                     ShowError(e.Message);
                     break;
+                
+                case InvoiceNotFoundException e:
+                    ShowError(e.Message);
+                    break;
+
+                case InvalidInvoiceStatusException e:
+                    ShowError(e.Message);
+                    break;
+
+                case InvoiceItemNotFoundException e:
+                    ShowError(e.Message);
+                    break;
+
+                case ExceededReturnQuantityException e:
+                    ShowError(e.Message);
+                    break;
+                
+                case BatchNotFoundException e:
+                    ShowError(e.Message);
+                    break;
+                
+                case RefundProcessException e:
+                    ShowError(e.Message);
+                    break;
 
                 default:
                     ShowError("An unexpected error occurred. Please try again later.");

@@ -14,6 +14,7 @@ namespace DAL.Models
         public int BatchItemId { get; set; }
         public virtual BatchItem BatchItem { get; set; }
         public int Quantity { get; set; } 
+        public int ReturnedQuantity { get; set; }
         public decimal OriginalPrice { get; set; } 
         public decimal DiscountedPrice { get; set; } 
     }

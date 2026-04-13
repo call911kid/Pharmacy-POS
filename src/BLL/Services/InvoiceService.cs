@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.Exceptions;
-using UI.Exceptions;
 using BLL.DTOs.InvoiceItem;
 using System.Net.NetworkInformation;
 using Common.Enums;
@@ -61,7 +60,16 @@ namespace BLL.Services
                     });
                 }
 
+                
                 invoice.TotalAmount = totalInvoicePrice;
+                invoice.TotalDiscount = 0m;
+                invoice.NetAmount = totalInvoicePrice;
+
+                
+                foreach (var ii in invoice.InvoiceItems)
+                {
+                    ii.DiscountedPrice = ii.OriginalPrice;
+                }
 
                 await _unitOfWork.Invoices.AddAsync(invoice);
                 var result = await _unitOfWork.SaveChangesAsync();

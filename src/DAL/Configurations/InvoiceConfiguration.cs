@@ -35,6 +35,9 @@ namespace DAL.Configurations
                 .HasMaxLength(20)
                 .IsRequired();
 
+            builder.Property(i => i.TotalDiscount).HasDefaultValue(0m);
+            builder.Property(i => i.NetAmount).HasDefaultValue(0m);
+
         }
     }
 }

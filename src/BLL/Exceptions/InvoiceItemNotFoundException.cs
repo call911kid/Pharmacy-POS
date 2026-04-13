@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace BLL.Exceptions
 {
-    public class InsufficientStockException : Exception
+    public class InvoiceItemNotFoundException : Exception
     {
-        public InsufficientStockException(string message) : base(message)
+        public InvoiceItemNotFoundException(string message) : base(message)
         {
         }
     }
