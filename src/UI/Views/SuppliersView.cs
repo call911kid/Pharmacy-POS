@@ -1,6 +1,7 @@
 using BLL.DTOs.Supplier;
 using BLL.Interfaces;
 using UI.Forms;
+using UI.Theme;
 
 namespace UI.Views
 {
@@ -12,7 +13,6 @@ namespace UI.Views
         private readonly TextBox _txtSearch;
         private readonly Button _btnRefresh;
         private readonly Button _btnAdd;
-        private readonly Button _btnEdit;
         private readonly Button _btnDelete;
         private readonly DataGridView _grid;
 
@@ -24,7 +24,7 @@ namespace UI.Views
             _supplierService = supplierService;
 
             Dock = DockStyle.Fill;
-            BackColor = SystemColors.Control;
+            BackColor = UiPalette.AppBackground;
 
             var root = new TableLayoutPanel
             {
@@ -33,30 +33,41 @@ namespace UI.Views
                 RowCount = 2,
                 Padding = new Padding(0)
             };
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 72F));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 104F));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
             var topGroup = new GroupBox
             {
                 Dock = DockStyle.Fill,
-                Text = "Suppliers"
+                Text = "Suppliers",
+                Font = UiPalette.BodyFont(10F, FontStyle.Bold),
+                ForeColor = UiPalette.TextPrimary,
+                Padding = new Padding(12, 16, 12, 12)
             };
 
             var topLayout = new TableLayoutPanel
             {
-                Dock = DockStyle.Fill,
-                ColumnCount = 5
+                Dock = DockStyle.Top,
+                ColumnCount = 4,
+                BackColor = UiPalette.AppBackground,
+                Padding = new Padding(8, 6, 8, 6),
+                Height = 52,
+                Margin = new Padding(0)
             };
             topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110F));
-            topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110F));
-            topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110F));
-            topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110F));
+            topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 116F));
+            topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 116F));
+            topLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 116F));
 
             _txtSearch = new TextBox
             {
-                Dock = DockStyle.Fill,
-                PlaceholderText = "Search by supplier name or phone"
+                Anchor = AnchorStyles.Left | AnchorStyles.Right,
+                PlaceholderText = "Search by supplier name or phone",
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = UiPalette.AppBackground,
+                ForeColor = UiPalette.TextPrimary,
+                Font = UiPalette.BodyFont(10F),
+                Margin = new Padding(0, 0, 12, 0)
             };
             _txtSearch.TextChanged += (_, _) => ApplyFilter();
 
@@ -65,6 +76,7 @@ namespace UI.Views
                 Dock = DockStyle.Fill,
                 Text = "Refresh"
             };
+            StyleSecondaryButton(_btnRefresh);
             _btnRefresh.Click += async (_, _) => await LoadSuppliersAsync();
 
             _btnAdd = new Button
@@ -72,15 +84,8 @@ namespace UI.Views
                 Dock = DockStyle.Fill,
                 Text = "Add"
             };
+            StylePrimaryButton(_btnAdd);
             _btnAdd.Click += async (_, _) => await OpenSupplierFormAsync();
-
-            _btnEdit = new Button
-            {
-                Dock = DockStyle.Fill,
-                Text = "Edit",
-                Enabled = false
-            };
-            _btnEdit.Click += async (_, _) => await OpenSupplierFormAsync(GetSelectedSupplier());
 
             _btnDelete = new Button
             {
@@ -88,19 +93,22 @@ namespace UI.Views
                 Text = "Delete",
                 Enabled = false
             };
+            StyleDangerButton(_btnDelete);
             _btnDelete.Click += async (_, _) => await DeleteSelectedSupplierAsync();
 
             topLayout.Controls.Add(_txtSearch, 0, 0);
             topLayout.Controls.Add(_btnRefresh, 1, 0);
             topLayout.Controls.Add(_btnAdd, 2, 0);
-            topLayout.Controls.Add(_btnEdit, 3, 0);
-            topLayout.Controls.Add(_btnDelete, 4, 0);
+            topLayout.Controls.Add(_btnDelete, 3, 0);
             topGroup.Controls.Add(topLayout);
 
             var listGroup = new GroupBox
             {
                 Dock = DockStyle.Fill,
-                Text = "Supplier List"
+                Text = "Suppliers List",
+                Font = UiPalette.BodyFont(10F, FontStyle.Bold),
+                ForeColor = UiPalette.TextPrimary,
+                Padding = new Padding(12, 10, 12, 12)
             };
 
             _grid = new DataGridView
@@ -112,8 +120,45 @@ namespace UI.Views
                 MultiSelect = false,
                 AutoGenerateColumns = false,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                RowHeadersVisible = false
+                RowHeadersVisible = false,
+                EnableHeadersVisualStyles = false,
+                BackgroundColor = UiPalette.Surface,
+                BorderStyle = BorderStyle.None,
+                CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
+                GridColor = UiPalette.Border,
+                ColumnHeadersHeight = 40,
+                Font = UiPalette.BodyFont(10F)
             };
+            _grid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = UiPalette.PrimaryMuted,
+                ForeColor = UiPalette.TextPrimary,
+                Font = UiPalette.BodyFont(10F, FontStyle.Bold),
+                SelectionBackColor = UiPalette.PrimaryMuted,
+                SelectionForeColor = UiPalette.TextPrimary,
+                Alignment = DataGridViewContentAlignment.MiddleLeft
+            };
+            _grid.DefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = UiPalette.Surface,
+                ForeColor = UiPalette.TextPrimary,
+                Font = UiPalette.BodyFont(10F),
+                SelectionBackColor = UiPalette.PrimaryMuted,
+                SelectionForeColor = UiPalette.TextPrimary,
+                Alignment = DataGridViewContentAlignment.MiddleLeft,
+                Padding = new Padding(8, 0, 8, 0)
+            };
+            _grid.AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = UiPalette.RowAlternate,
+                ForeColor = UiPalette.TextPrimary,
+                Font = UiPalette.BodyFont(10F),
+                SelectionBackColor = UiPalette.PrimaryMuted,
+                SelectionForeColor = UiPalette.TextPrimary,
+                Alignment = DataGridViewContentAlignment.MiddleLeft,
+                Padding = new Padding(8, 0, 8, 0)
+            };
+            _grid.RowTemplate.Height = 36;
             _grid.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = nameof(SupplierDto.Id),
@@ -200,7 +245,6 @@ namespace UI.Views
         private void UpdateSelectionState()
         {
             var hasSelection = GetSelectedSupplier() is not null;
-            _btnEdit.Enabled = hasSelection && !_isLoading;
             _btnDelete.Enabled = hasSelection && !_isLoading;
         }
 
@@ -259,6 +303,37 @@ namespace UI.Views
             _btnRefresh.Enabled = !isBusy;
             _btnAdd.Enabled = !isBusy;
             UpdateSelectionState();
+        }
+
+        private static void StylePrimaryButton(Button button)
+        {
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 0;
+            button.UseVisualStyleBackColor = false;
+            button.BackColor = UiPalette.Primary;
+            button.ForeColor = Color.White;
+            button.Font = UiPalette.BodyFont(10F, FontStyle.Bold);
+            button.Margin = new Padding(0, 4, 0, 4);
+            button.Cursor = Cursors.Hand;
+        }
+
+        private static void StyleSecondaryButton(Button button)
+        {
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 1;
+            button.FlatAppearance.BorderColor = UiPalette.Border;
+            button.UseVisualStyleBackColor = false;
+            button.BackColor = UiPalette.Surface;
+            button.ForeColor = UiPalette.TextPrimary;
+            button.Font = UiPalette.BodyFont(10F, FontStyle.Regular);
+            button.Margin = new Padding(0, 4, 0, 4);
+            button.Cursor = Cursors.Hand;
+        }
+
+        private static void StyleDangerButton(Button button)
+        {
+            StyleSecondaryButton(button);
+            button.ForeColor = Color.FromArgb(185, 28, 28);
         }
     }
 }
