@@ -1,4 +1,5 @@
 using UI.Theme;
+using System.ComponentModel;
 
 namespace UI.Controls
 {
@@ -15,7 +16,9 @@ namespace UI.Controls
 
     internal sealed class SectionIcon : Control
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public SectionIconKind Kind { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color AccentColor { get; set; } = UiPalette.Primary;
 
         public SectionIcon()

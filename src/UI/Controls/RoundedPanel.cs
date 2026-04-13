@@ -1,5 +1,6 @@
 using System.Drawing.Drawing2D;
 using UI.Theme;
+using System.ComponentModel;
 
 namespace UI.Controls
 {
@@ -8,6 +9,7 @@ namespace UI.Controls
         private int _cornerRadius = 12;
         private int _borderThickness = 1;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int CornerRadius
         {
             get => _cornerRadius;
@@ -19,8 +21,10 @@ namespace UI.Controls
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color BorderColor { get; set; } = UiPalette.Border;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int BorderThickness
         {
             get => _borderThickness;
