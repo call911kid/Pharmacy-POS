@@ -65,7 +65,7 @@ namespace BLL.Services
             var batch = new Batch
             {
                 SupplierId = createBatchDto.SupplierId,
-                PurchaseDate = DateTime.Now,
+                PurchaseDate = createBatchDto.PurchaseDate,
                 
                 BatchItems = createBatchDto.BatchItems.Select(item => new BatchItem
                 {
@@ -82,6 +82,32 @@ namespace BLL.Services
 
             await _unitOfWork.Batches.AddAsync(batch);
 
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task UpdateBatchAsync(int batchId, CreateBatchDto createBatchDto)
+        {
+            var batch = await _unitOfWork.Batches.GetByIdAsync(batchId)
+                ?? throw new EntityNotFoundException($"Batch with ID {batchId} not found.");
+
+            foreach (var existingItem in batch.BatchItems.ToList())
+            {
+                _unitOfWork.BatchItems.Delete(existingItem);
+            }
+
+            batch.SupplierId = createBatchDto.SupplierId;
+            batch.PurchaseDate = createBatchDto.PurchaseDate;
+            batch.BatchItems = createBatchDto.BatchItems.Select(item => new BatchItem
+            {
+                ProductId = item.ProductId,
+                QuantityReceived = item.QuantityReceived,
+                QuantityRemaining = item.QuantityReceived,
+                ExpirationDate = item.ExpirationDate,
+                CostPrice = item.CostPrice,
+                MandatorySellingPrice = item.MandatorySellingPrice
+            }).ToList();
+
+            _unitOfWork.Batches.Update(batch);
             await _unitOfWork.SaveChangesAsync();
         }
 

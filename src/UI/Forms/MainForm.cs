@@ -12,6 +12,7 @@ namespace UI
         private readonly ScannerEventBus _eventBus;
         private readonly ISupplierService _supplierService;
         private readonly IBatchService _batchService;
+        private readonly IProductService _productService;
         private readonly Dictionary<string, RoundedButton> _navButtons = new();
         private readonly Dictionary<string, ShellModuleView> _views = new();
         private readonly Dictionary<string, UserControl> _customViews = new();
@@ -27,7 +28,7 @@ namespace UI
         private RoundedButton btnAdjustments = null!;
         private RoundedButton btnScanner = null!;
 
-        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService)
+        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService, IProductService productService)
         {
             InitializeComponent();
             BuildShellLayout();
@@ -35,6 +36,7 @@ namespace UI
             _eventBus = eventBus;
             _supplierService = supplierService;
             _batchService = batchService;
+            _productService = productService;
             _eventBus.BarcodeScanned += OnBarcodeScanned;
 
             ApplyTheme();
@@ -298,7 +300,7 @@ namespace UI
             _navButtons["customers"] = btnCustomers;
             _navButtons["adjustments"] = btnAdjustments;
             _customViews["suppliers"] = new SuppliersView(_supplierService);
-            _customViews["inventory"] = new Views.InventoryBatchesView(_batchService, _supplierService);
+            _customViews["inventory"] = new Views.InventoryBatchesView(_batchService, _supplierService, _productService, _eventBus);
 
             _views["dashboard"] = new ShellModuleView(
                 "Clinical operations overview",
@@ -480,6 +482,13 @@ namespace UI
 
         private void UpdateScannerStatus(string barcode)
         {
+            if (string.IsNullOrWhiteSpace(barcode))
+            {
+                return;
+            }
+
+            searchTextBox.Text = barcode;
+            searchTextBox.ForeColor = UiPalette.TextPrimary;
         }
 
         private void OpenScannerConnection()
@@ -533,10 +542,10 @@ namespace UI
                 lblSectionTitle.Text = shellModuleView.Title;
                 lblSectionSubtitle.Text = shellModuleView.Subtitle;
             }
-            else
+            else if (view is ISectionView sectionView)
             {
-                lblSectionTitle.Text = "Suppliers";
-                lblSectionSubtitle.Text = "Create, search, update, and delete supplier records.";
+                lblSectionTitle.Text = sectionView.SectionTitle;
+                lblSectionSubtitle.Text = sectionView.SectionSubtitle;
             }
         }
 
