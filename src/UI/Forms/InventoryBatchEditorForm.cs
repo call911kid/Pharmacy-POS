@@ -219,6 +219,13 @@ namespace UI.Forms
             });
             _itemsGrid.Columns.Add(new DataGridViewTextBoxColumn
             {
+                HeaderText = "Remaining",
+                DataPropertyName = nameof(BatchItemEditorRow.QuantityRemaining),
+                Width = 95,
+                ReadOnly = true
+            });
+            _itemsGrid.Columns.Add(new DataGridViewTextBoxColumn
+            {
                 HeaderText = "Expiry",
                 DataPropertyName = nameof(BatchItemEditorRow.ExpirationDate),
                 Width = 120
@@ -301,6 +308,7 @@ namespace UI.Forms
                             Barcode = product?.Barcode ?? string.Empty,
                             ProductName = product?.Name ?? $"Product #{item.ProductId}",
                             QuantityReceived = item.QuantityReceived,
+                            QuantityRemaining = item.QuantityRemaining,
                             ExpirationDate = item.ExpirationDate,
                             CostPrice = item.CostPrice,
                             MandatorySellingPrice = item.MandatorySellingPrice
@@ -346,6 +354,7 @@ namespace UI.Forms
                 {
                     ProductId = item.ProductId,
                     QuantityReceived = item.QuantityReceived,
+                    QuantityRemaining = item.QuantityRemaining,
                     ExpirationDate = item.ExpirationDate.Date,
                     CostPrice = item.CostPrice,
                     MandatorySellingPrice = item.MandatorySellingPrice
@@ -438,6 +447,7 @@ namespace UI.Forms
         {
             var item = CreateNewItemRow();
             item.QuantityReceived = 1;
+            item.QuantityRemaining = 1;
             _itemsBinding.Add(item);
             SelectRow(item);
         }
@@ -536,6 +546,7 @@ namespace UI.Forms
                 selectedRow.ProductId <= 0)
             {
                 selectedRow.QuantityReceived = 0;
+                selectedRow.QuantityRemaining = 0;
                 ApplyProductToRow(selectedRow, product);
                 return selectedRow;
             }
@@ -571,6 +582,9 @@ namespace UI.Forms
             row.QuantityReceived = row.QuantityReceived <= 0
                 ? 1
                 : row.QuantityReceived + 1;
+            row.QuantityRemaining = row.QuantityRemaining <= 0
+                ? 1
+                : row.QuantityRemaining + 1;
         }
 
         private BatchItemEditorRow CreateNewItemRow()
@@ -578,6 +592,7 @@ namespace UI.Forms
             return new BatchItemEditorRow
             {
                 QuantityReceived = 0,
+                QuantityRemaining = 0,
                 ExpirationDate = DateTime.Today.AddYears(1),
                 CostPrice = 0m,
                 MandatorySellingPrice = 0m
@@ -620,6 +635,7 @@ namespace UI.Forms
             private string _barcode = string.Empty;
             private string _productName = string.Empty;
             private int _quantityReceived;
+            private int _quantityRemaining;
             private DateTime _expirationDate = DateTime.Today.AddYears(1);
             private decimal _costPrice;
             private decimal _mandatorySellingPrice;
@@ -646,6 +662,12 @@ namespace UI.Forms
             {
                 get => _quantityReceived;
                 set => SetField(ref _quantityReceived, value, nameof(QuantityReceived));
+            }
+
+            public int QuantityRemaining
+            {
+                get => _quantityRemaining;
+                set => SetField(ref _quantityRemaining, value, nameof(QuantityRemaining));
             }
 
             public DateTime ExpirationDate

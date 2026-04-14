@@ -71,8 +71,7 @@ namespace BLL.Services
                 {
                     ProductId = item.ProductId,
                     QuantityReceived = item.QuantityReceived,
-                    
-                    QuantityRemaining = item.QuantityReceived,
+                    QuantityRemaining = item.QuantityRemaining ?? item.QuantityReceived,
 
                     ExpirationDate = item.ExpirationDate,
                     CostPrice = item.CostPrice,
@@ -101,7 +100,7 @@ namespace BLL.Services
             {
                 ProductId = item.ProductId,
                 QuantityReceived = item.QuantityReceived,
-                QuantityRemaining = item.QuantityReceived,
+                QuantityRemaining = item.QuantityRemaining ?? item.QuantityReceived,
                 ExpirationDate = item.ExpirationDate,
                 CostPrice = item.CostPrice,
                 MandatorySellingPrice = item.MandatorySellingPrice
