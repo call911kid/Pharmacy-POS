@@ -12,6 +12,7 @@ namespace UI
         private readonly ScannerEventBus _eventBus;
         private readonly ISupplierService _supplierService;
         private readonly IBatchService _batchService;
+        private readonly ICustomerService _customerService;
         private readonly Dictionary<string, RoundedButton> _navButtons = new();
         private readonly Dictionary<string, ShellModuleView> _views = new();
         private readonly Dictionary<string, UserControl> _customViews = new();
@@ -27,7 +28,7 @@ namespace UI
         private RoundedButton btnAdjustments = null!;
         private RoundedButton btnScanner = null!;
 
-        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService)
+        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService, ICustomerService customerService)
         {
             InitializeComponent();
             BuildShellLayout();
@@ -35,6 +36,7 @@ namespace UI
             _eventBus = eventBus;
             _supplierService = supplierService;
             _batchService = batchService;
+            _customerService = customerService;
             _eventBus.BarcodeScanned += OnBarcodeScanned;
 
             ApplyTheme();
@@ -299,6 +301,7 @@ namespace UI
             _navButtons["adjustments"] = btnAdjustments;
             _customViews["suppliers"] = new SuppliersView(_supplierService);
             _customViews["inventory"] = new Views.InventoryBatchesView(_batchService, _supplierService);
+            _customViews["customers"] = new Views.CustomersView(_customerService);
 
             _views["dashboard"] = new ShellModuleView(
                 "Clinical operations overview",
@@ -532,6 +535,11 @@ namespace UI
             {
                 lblSectionTitle.Text = shellModuleView.Title;
                 lblSectionSubtitle.Text = shellModuleView.Subtitle;
+            }
+            else if (key == "customers")
+            {
+                lblSectionTitle.Text = "Customers";
+                lblSectionSubtitle.Text = "Search, create, and update customer records.";
             }
             else
             {
