@@ -94,10 +94,7 @@ namespace BLL.Services
                 await _unitOfWork.SaveChangesAsync();
                 throw new RefundProcessException("Refund operation failed and was rolled back.", ex);
             }
-            finally
-            {
-                _unitOfWork.Dispose();
-            }
+            
         }
     }
 }

@@ -88,10 +88,7 @@ namespace BLL.Services
                 await _unitOfWork.SaveChangesAsync();
                 throw new Exception("Operation failed. Changes were rolled back manually.", ex);
             }
-            finally
-            {
-                _unitOfWork.Dispose();
-            }
+            
         }
 
         public async Task<IEnumerable<InvoiceDto>> GetCustomerInvoicesAsync(int customerId)
