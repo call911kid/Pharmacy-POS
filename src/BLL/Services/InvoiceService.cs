@@ -12,6 +12,7 @@ using BLL.Exceptions;
 using BLL.DTOs.InvoiceItem;
 using System.Net.NetworkInformation;
 using Common.Enums;
+using BLL.Utils;
 namespace BLL.Services
 {
 
@@ -31,7 +32,8 @@ namespace BLL.Services
                 CustomerId = invoiceDto.CustomerId,
                 InvoiceDate = invoiceDto.InvoiceDate,
                 Status = invoiceDto.Status,
-                InvoiceItems = new List<InvoiceItem>()
+                InvoiceItems = new List<InvoiceItem>(),
+                Barcode = BarcodeGenerator.GenerateInvoiceBarcode()
             };
             var modifiedBatches = new List<(BatchItem batch, int subtractedQuantity)>();
             decimal totalInvoicePrice = 0;
