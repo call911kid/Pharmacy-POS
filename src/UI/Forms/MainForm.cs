@@ -12,6 +12,7 @@ namespace UI
         private readonly ScannerEventBus _eventBus;
         private readonly ISupplierService _supplierService;
         private readonly IBatchService _batchService;
+        private readonly IInvoiceService _invoiceService;
         private readonly Dictionary<string, RoundedButton> _navButtons = new();
         private readonly Dictionary<string, ShellModuleView> _views = new();
         private readonly Dictionary<string, UserControl> _customViews = new();
@@ -27,7 +28,7 @@ namespace UI
         private RoundedButton btnAdjustments = null!;
         private RoundedButton btnScanner = null!;
 
-        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService)
+        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService, IInvoiceService invoiceService)
         {
             InitializeComponent();
             BuildShellLayout();
@@ -35,6 +36,7 @@ namespace UI
             _eventBus = eventBus;
             _supplierService = supplierService;
             _batchService = batchService;
+            _invoiceService = invoiceService;
             _eventBus.BarcodeScanned += OnBarcodeScanned;
 
             ApplyTheme();
@@ -299,6 +301,7 @@ namespace UI
             _navButtons["adjustments"] = btnAdjustments;
             _customViews["suppliers"] = new SuppliersView(_supplierService);
             _customViews["inventory"] = new Views.InventoryBatchesView(_batchService, _supplierService);
+            _customViews["pos"] = new InvoiceView(_batchService, _invoiceService, _eventBus);
 
             _views["dashboard"] = new ShellModuleView(
                 "Clinical operations overview",
@@ -326,34 +329,6 @@ namespace UI
                         new[] { "Pending batches", "Review", "4", "Inventory Batches" },
                         new[] { "Supplier follow-up", "Today", "2", "Suppliers" },
                         new[] { "Stock variances", "Watch", "3", "Stock Adjustments" }
-                    }));
-
-            _views["pos"] = new ShellModuleView(
-                "POS / Register",
-                "The register should feel calm and fast: patient first, medicine second, totals always clear.",
-                "Register design goals",
-                new[]
-                {
-                    "Keep customer identification visible before invoice completion.",
-                    "Reserve the largest area for the cart ledger and totals scan.",
-                    "Use the scanner button as a side action, never the center of the workflow."
-                },
-                new ShellModuleLedger(
-                    "Register preview",
-                    "Styled as a clean pharmacy ledger with right-aligned quantity and price columns.",
-                    new[]
-                    {
-                        new ShellModuleColumn("item", "Medicine", 150F),
-                        new ShellModuleColumn("batch", "Lot", 85F),
-                        new ShellModuleColumn("qty", "Qty", 55F, true),
-                        new ShellModuleColumn("price", "Price", 75F, true),
-                        new ShellModuleColumn("net", "Net", 75F, true)
-                    },
-                    new[]
-                    {
-                        new[] { "Augmentin 1g", "B-204", "2", "72.50", "145.00" },
-                        new[] { "Panadol Extra", "B-311", "1", "38.00", "38.00" },
-                        new[] { "Vitamin C", "B-188", "3", "24.00", "72.00" }
                     }));
 
             _views["inventory"] = new ShellModuleView(
@@ -535,8 +510,21 @@ namespace UI
             }
             else
             {
-                lblSectionTitle.Text = "Suppliers";
-                lblSectionSubtitle.Text = "Create, search, update, and delete supplier records.";
+                switch (key)
+                {
+                    case "suppliers":
+                        lblSectionTitle.Text = "Suppliers";
+                        lblSectionSubtitle.Text = "Create, search, update, and delete supplier records.";
+                        break;
+                    case "inventory":
+                        lblSectionTitle.Text = "Inventory Batches";
+                        lblSectionSubtitle.Text = "Manage product inventory and batches.";
+                        break;
+                    case "pos":
+                        lblSectionTitle.Text = "POS / Register";
+                        lblSectionSubtitle.Text = "The register feels calm and fast: totals always clear.";
+                        break;
+                }
             }
         }
 

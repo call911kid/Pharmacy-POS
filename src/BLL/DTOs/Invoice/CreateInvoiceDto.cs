@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +9,7 @@ namespace BLL.DTOs.Invoice
     public class CreateInvoiceDto
     {
         public int CustomerId { get; set; }
+        public Common.Enums.InvoiceStatus Status { get; set; }
         public DateTime InvoiceDate { get; set; }
         public List<CreateInvoiceItemDto> InvoiceItems { get; set; }
         public CreateInvoiceDto()

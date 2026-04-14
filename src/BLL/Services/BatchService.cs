@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -107,6 +107,23 @@ namespace BLL.Services
             }).ToList();
         }
 
+        public async Task<BatchItemDto> GetBatchItemByBarcodeAsync(string barcode)
+        {
+            var item = await _unitOfWork.BatchItems.GetActiveBatchItemByBarcodeAsync(barcode);
+            if (item == null) return null;
 
+            return new BatchItemDto
+            {
+                Id = item.Id,
+                BatchId = item.BatchId,
+                ProductId = item.ProductId,
+                ProductName = item.Product?.Name,
+                QuantityReceived = item.QuantityReceived,
+                QuantityRemaining = item.QuantityRemaining,
+                ExpirationDate = item.ExpirationDate,
+                CostPrice = item.CostPrice,
+                MandatorySellingPrice = item.MandatorySellingPrice
+            };
+        }
     }
 }
