@@ -141,6 +141,28 @@ namespace BLL.Services
             }
         }
 
+        public async Task<bool> DeleteCustomerAsync(int customerId)
+        {
+            try
+            {
+                var customer = await _unitOfWork.Customers.GetByIdAsync(customerId);
+                if (customer == null)
+                    return false;
+
+                var hasInvoices = await _unitOfWork.Invoices.FirstOrDefaultAsync(i => i.CustomerId == customerId) is not null;
+                if (hasInvoices)
+                    return false;
+
+                _unitOfWork.Customers.Delete(customer);
+                await _unitOfWork.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<CustomerValidationResultDto> ValidateForSaleAsync(int customerId)
         {
             try

@@ -290,13 +290,35 @@ namespace UI.Views
             if (confirmation != DialogResult.Yes)
                 return;
 
-            // Note: ICustomerService does not expose a DeleteCustomerAsync method.
-            // Deletion is intentionally restricted at the BLL level to protect invoice history.
-            MessageBox.Show(
-                "Customer deletion is not supported to preserve invoice history integrity.\n\nYou can edit the customer's contact information instead.",
-                "Delete Customer",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            try
+            {
+                ToggleBusyState(true);
+
+                var deleted = await _customerService.DeleteCustomerAsync(customer.Id);
+                if (!deleted)
+                {
+                    MessageBox.Show(
+                        "Could not delete the customer. The customer may not exist anymore or already has invoice history.",
+                        "Delete Customer",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                await LoadCustomersAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Could not delete customer.\n\n{ex.Message}",
+                    "Delete Customer",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            finally
+            {
+                ToggleBusyState(false);
+            }
         }
 
         private void ToggleBusyState(bool isBusy)
