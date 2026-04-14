@@ -13,6 +13,7 @@ namespace UI
         private readonly ISupplierService _supplierService;
         private readonly IBatchService _batchService;
         private readonly IInvoiceService _invoiceService;
+        private readonly ICustomerService _customerService;
         private readonly Dictionary<string, RoundedButton> _navButtons = new();
         private readonly Dictionary<string, ShellModuleView> _views = new();
         private readonly Dictionary<string, UserControl> _customViews = new();
@@ -28,7 +29,7 @@ namespace UI
         private RoundedButton btnAdjustments = null!;
         private RoundedButton btnScanner = null!;
 
-        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService, IInvoiceService invoiceService)
+        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService, ICustomerService customerService, IInvoiceService invoiceService)
         {
             InitializeComponent();
             BuildShellLayout();
@@ -36,6 +37,7 @@ namespace UI
             _eventBus = eventBus;
             _supplierService = supplierService;
             _batchService = batchService;
+            _customerService = customerService;
             _invoiceService = invoiceService;
             _eventBus.BarcodeScanned += OnBarcodeScanned;
 
@@ -301,6 +303,7 @@ namespace UI
             _navButtons["adjustments"] = btnAdjustments;
             _customViews["suppliers"] = new SuppliersView(_supplierService);
             _customViews["inventory"] = new Views.InventoryBatchesView(_batchService, _supplierService);
+            _customViews["customers"] = new Views.CustomersView(_customerService);
             _customViews["pos"] = new InvoiceView(_batchService, _invoiceService, _eventBus);
 
             _views["dashboard"] = new ShellModuleView(
@@ -329,6 +332,34 @@ namespace UI
                         new[] { "Pending batches", "Review", "4", "Inventory Batches" },
                         new[] { "Supplier follow-up", "Today", "2", "Suppliers" },
                         new[] { "Stock variances", "Watch", "3", "Stock Adjustments" }
+                    }));
+
+            _views["pos"] = new ShellModuleView(
+                "POS / Register",
+                "The register should feel calm and fast: patient first, medicine second, totals always clear.",
+                "Register design goals",
+                new[]
+                {
+                    "Keep customer identification visible before invoice completion.",
+                    "Reserve the largest area for the cart ledger and totals scan.",
+                    "Use the scanner button as a side action, never the center of the workflow."
+                },
+                new ShellModuleLedger(
+                    "Register preview",
+                    "Styled as a clean pharmacy ledger with right-aligned quantity and price columns.",
+                    new[]
+                    {
+                        new ShellModuleColumn("item", "Medicine", 150F),
+                        new ShellModuleColumn("batch", "Lot", 85F),
+                        new ShellModuleColumn("qty", "Qty", 55F, true),
+                        new ShellModuleColumn("price", "Price", 75F, true),
+                        new ShellModuleColumn("net", "Net", 75F, true)
+                    },
+                    new[]
+                    {
+                        new[] { "Augmentin 1g", "B-204", "2", "72.50", "145.00" },
+                        new[] { "Panadol Extra", "B-311", "1", "38.00", "38.00" },
+                        new[] { "Vitamin C", "B-188", "3", "24.00", "72.00" }
                     }));
 
             _views["inventory"] = new ShellModuleView(
@@ -509,7 +540,6 @@ namespace UI
                 lblSectionSubtitle.Text = shellModuleView.Subtitle;
             }
             else
-            {
                 switch (key)
                 {
                     case "suppliers":
@@ -524,8 +554,13 @@ namespace UI
                         lblSectionTitle.Text = "POS / Register";
                         lblSectionSubtitle.Text = "The register feels calm and fast: totals always clear.";
                         break;
+                    case "customers":
+                        lblSectionTitle.Text = "Customers";
+                        lblSectionSubtitle.Text = "Search, create, and update customer records.";
+                        break;
+
                 }
-            }
+            
         }
 
         private void searchTextBox_Enter(object sender, EventArgs e)
