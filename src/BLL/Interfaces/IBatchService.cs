@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +15,6 @@ namespace BLL.Interfaces
         Task UpdateBatchAsync(int batchId, CreateBatchDto createBatchDto);
         Task DeleteBatchAsync(int batchId);
         Task<IEnumerable<BatchSummaryDto>> GetBatchesBySupplierAsync(int supplierId);
+        Task<BLL.DTOs.BatchItem.BatchItemDto> GetBatchItemByBarcodeAsync(string barcode);
     }
 }

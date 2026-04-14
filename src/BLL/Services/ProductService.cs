@@ -32,7 +32,7 @@ namespace BLL.Services
             if (string.IsNullOrWhiteSpace(barcode))
             {
                 return null;
-            }
+        }
 
             var normalizedBarcode = barcode.Trim();
             var product = await _unitOfWork.Products.FirstOrDefaultAsync(
@@ -68,19 +68,19 @@ namespace BLL.Services
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentException("Product name is required.", nameof(createProductDto));
-            }
+        }
 
             if (!string.IsNullOrWhiteSpace(barcode))
             {
                 var existingProduct = await _unitOfWork.Products.FirstOrDefaultAsync(p => p.Barcode == barcode);
                 if (existingProduct is not null)
-                {
+        {
                     throw new DuplicateException($"Barcode '{barcode}' already belongs to '{existingProduct.Name}'.");
                 }
-            }
+        }
 
             var product = new Product
-            {
+        {
                 Name = name,
                 Barcode = barcode
             };

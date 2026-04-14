@@ -1,4 +1,4 @@
-﻿using BLL.DTOs.Invoice;
+using BLL.DTOs.Invoice;
 using BLL.Interfaces;
 using DAL.Interfaces;
 using DAL.Models;
@@ -30,7 +30,7 @@ namespace BLL.Services
             {
                 CustomerId = invoiceDto.CustomerId,
                 InvoiceDate = invoiceDto.InvoiceDate,
-                Status = InvoiceStatus.Finalized,
+                Status = invoiceDto.Status,
                 InvoiceItems = new List<InvoiceItem>()
             };
             var modifiedBatches = new List<(BatchItem batch, int subtractedQuantity)>();

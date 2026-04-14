@@ -21,5 +21,7 @@ namespace BLL.Interfaces
         Task<IReadOnlyList<CustomerDto>> FindByNameAsync(string name);
 
         Task<CustomerDto?> UpdateContactInfoAsync(int customerId, string name, string phone);
+
+        Task<bool> DeleteCustomerAsync(int customerId);
     }
 }

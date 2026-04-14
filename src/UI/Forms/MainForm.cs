@@ -12,6 +12,8 @@ namespace UI
         private readonly ScannerEventBus _eventBus;
         private readonly ISupplierService _supplierService;
         private readonly IBatchService _batchService;
+        private readonly IInvoiceService _invoiceService;
+        private readonly ICustomerService _customerService;
         private readonly IProductService _productService;
         private readonly Dictionary<string, RoundedButton> _navButtons = new();
         private readonly Dictionary<string, ShellModuleView> _views = new();
@@ -28,7 +30,7 @@ namespace UI
         private RoundedButton btnAdjustments = null!;
         private RoundedButton btnScanner = null!;
 
-        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService, IProductService productService)
+        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService, ICustomerService customerService, IInvoiceService invoiceService, IProductService productService)
         {
             InitializeComponent();
             BuildShellLayout();
@@ -37,6 +39,8 @@ namespace UI
             _supplierService = supplierService;
             _batchService = batchService;
             _productService = productService;
+            _customerService = customerService;
+            _invoiceService = invoiceService;
             _eventBus.BarcodeScanned += OnBarcodeScanned;
 
             ApplyTheme();
@@ -301,6 +305,8 @@ namespace UI
             _navButtons["adjustments"] = btnAdjustments;
             _customViews["suppliers"] = new SuppliersView(_supplierService);
             _customViews["inventory"] = new Views.InventoryBatchesView(_batchService, _supplierService, _productService, _eventBus);
+            _customViews["customers"] = new Views.CustomersView(_customerService);
+            _customViews["pos"] = new InvoiceView(_batchService, _invoiceService, _eventBus);
 
             _views["dashboard"] = new ShellModuleView(
                 "Clinical operations overview",
@@ -547,6 +553,28 @@ namespace UI
                 lblSectionTitle.Text = sectionView.SectionTitle;
                 lblSectionSubtitle.Text = sectionView.SectionSubtitle;
             }
+            else
+                switch (key)
+                {
+                    case "suppliers":
+                        lblSectionTitle.Text = "Suppliers";
+                        lblSectionSubtitle.Text = "Create, search, update, and delete supplier records.";
+                        break;
+                    case "inventory":
+                        lblSectionTitle.Text = "Inventory Batches";
+                        lblSectionSubtitle.Text = "Manage product inventory and batches.";
+                        break;
+                    case "pos":
+                        lblSectionTitle.Text = "POS / Register";
+                        lblSectionSubtitle.Text = "The register feels calm and fast: totals always clear.";
+                        break;
+                    case "customers":
+                        lblSectionTitle.Text = "Customers";
+                        lblSectionSubtitle.Text = "Search, create, and update customer records.";
+                        break;
+
+                }
+            
         }
 
         private void searchTextBox_Enter(object sender, EventArgs e)

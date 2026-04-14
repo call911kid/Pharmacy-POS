@@ -1,4 +1,4 @@
-using BLL.DTOs.Product;
+using BLL.DTOs;
 
 namespace BLL.Interfaces
 {
