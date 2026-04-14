@@ -518,10 +518,8 @@ namespace UI.Forms
             using var form = new ProductEditorForm(_productService, _eventBus, _txtBarcode.Text.Trim());
             if (form.ShowDialog(this) == DialogResult.OK && form.CreatedProduct is not null)
             {
-                var row = GetSelectedOrNewRow();
-                ApplyProductToRow(row, form.CreatedProduct);
                 _txtBarcode.Text = form.CreatedProduct.Barcode;
-                _lblScanStatus.Text = $"Created and attached '{form.CreatedProduct.Name}' to the current batch row.";
+                _lblScanStatus.Text = $"Created product '{form.CreatedProduct.Name}'. Scan its barcode to add it as a batch item.";
                 _lblScanStatus.ForeColor = UiPalette.TextPrimary;
             }
         }
@@ -537,6 +535,7 @@ namespace UI.Forms
             if (_itemsGrid.CurrentRow?.DataBoundItem is BatchItemEditorRow selectedRow &&
                 selectedRow.ProductId <= 0)
             {
+                selectedRow.QuantityReceived = 0;
                 ApplyProductToRow(selectedRow, product);
                 return selectedRow;
             }

@@ -116,6 +116,24 @@ namespace BLL.Services
             var batch = await _unitOfWork.Batches.GetByIdAsync(batchId)
                 ?? throw new EntityNotFoundException($"Batch with ID {batchId} not found.");
 
+            var batchItems = batch.BatchItems.ToList();
+            if (batchItems.Count > 0)
+            {
+                var batchItemIds = batchItems.Select(item => item.Id).ToList();
+                var linkedInvoiceItems = await _unitOfWork.InvoiceItems.FindAsync(ii => batchItemIds.Contains(ii.BatchItemId));
+
+                if (linkedInvoiceItems.Any())
+                {
+                    throw new InvalidOperationException(
+                        $"Batch {batchId} cannot be deleted because some of its items are already used in invoices.");
+                }
+
+                foreach (var batchItem in batchItems)
+                {
+                    _unitOfWork.BatchItems.Delete(batchItem);
+                }
+            }
+
             _unitOfWork.Batches.Delete(batch);
 
             await _unitOfWork.SaveChangesAsync();
