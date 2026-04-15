@@ -1,13 +1,13 @@
-using BLL.DTOs;
+using BLL.DTOs.Product;
 
 namespace BLL.Interfaces
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductDto>> GetAllAsync(int pageNumber, int pageSize);
-        Task<ProductDto> GetByIdAsync(int id);
-        Task<IEnumerable<ProductDto>> SearchAsync(string keyword);
-        Task AddAsync(ProductDto dto);
-        Task<IEnumerable<ProductDto>> GetNearExpiryAsync(int daysThreshold);
+        Task<IEnumerable<ProductDto>> GetAllProductsAsync(int pageNumber, int pageSize);
+        Task<ProductDto?> GetProductByIdAsync(int id);
+        Task<ProductDto?> GetProductByBarcodeAsync(string barcode);
+        Task<IEnumerable<ProductDto>> SearchProductsAsync(string searchTerm, int pageNumber, int pageSize);
+        Task<ProductDto> AddProductAsync(CreateProductDto createProductDto);
     }
 }

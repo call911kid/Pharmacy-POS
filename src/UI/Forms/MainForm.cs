@@ -14,6 +14,7 @@ namespace UI
         private readonly IBatchService _batchService;
         private readonly IInvoiceService _invoiceService;
         private readonly ICustomerService _customerService;
+        private readonly IProductService _productService;
         private readonly Dictionary<string, RoundedButton> _navButtons = new();
         private readonly Dictionary<string, ShellModuleView> _views = new();
         private readonly Dictionary<string, UserControl> _customViews = new();
@@ -31,7 +32,7 @@ namespace UI
         private RoundedButton btnPrescriptionScanner = null!;
         private RoundedButton btnScanner = null!;
 
-        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService, ICustomerService customerService, IInvoiceService invoiceService)
+        public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService, ICustomerService customerService, IInvoiceService invoiceService, IProductService productService)
         {
             InitializeComponent();
             BuildShellLayout();
@@ -39,6 +40,7 @@ namespace UI
             _eventBus = eventBus;
             _supplierService = supplierService;
             _batchService = batchService;
+            _productService = productService;
             _customerService = customerService;
             _invoiceService = invoiceService;
             _eventBus.BarcodeScanned += OnBarcodeScanned;
@@ -310,7 +312,7 @@ namespace UI
             _navButtons["customers"] = btnCustomers;
             _navButtons["adjustments"] = btnAdjustments;
             _customViews["suppliers"] = new SuppliersView(_supplierService);
-            _customViews["inventory"] = new Views.InventoryBatchesView(_batchService, _supplierService);
+            _customViews["inventory"] = new Views.InventoryBatchesView(_batchService, _supplierService, _productService, _eventBus);
             _customViews["customers"] = new Views.CustomersView(_customerService);
             _customViews["pos"] = new InvoiceView(_batchService, _invoiceService, _eventBus);
 
@@ -494,6 +496,13 @@ namespace UI
 
         private void UpdateScannerStatus(string barcode)
         {
+            if (string.IsNullOrWhiteSpace(barcode))
+            {
+                return;
+            }
+
+            searchTextBox.Text = barcode;
+            searchTextBox.ForeColor = UiPalette.TextPrimary;
         }
 
         private void OpenScannerConnection()
@@ -558,6 +567,11 @@ namespace UI
             {
                 lblSectionTitle.Text = shellModuleView.Title;
                 lblSectionSubtitle.Text = shellModuleView.Subtitle;
+            }
+            else if (view is ISectionView sectionView)
+            {
+                lblSectionTitle.Text = sectionView.SectionTitle;
+                lblSectionSubtitle.Text = sectionView.SectionSubtitle;
             }
             else
                 switch (key)

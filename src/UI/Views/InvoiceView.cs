@@ -34,8 +34,6 @@ namespace UI.Views
         private readonly Label _lblTotalAmount;
         private readonly Label _lblTotalDiscount;
         private readonly Label _lblNetAmount;
-        private readonly ComboBox _cmbStatus;
-
         private bool _isLoading;
 
         public InvoiceView(IBatchService batchService, IInvoiceService invoiceService, ScannerEventBus scannerEventBus)
@@ -47,7 +45,7 @@ namespace UI.Views
             _currentInvoice = new Invoice
             {
                 InvoiceDate = DateTime.Now,
-                Status = InvoiceStatus.Draft,
+                Status = InvoiceStatus.Finalized,
                 InvoiceItems = new List<InvoiceItem>()
             };
 
@@ -253,42 +251,24 @@ namespace UI.Views
             var totalsLayout = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
-                ColumnCount = 5,
+                ColumnCount = 4,
                 RowCount = 1,
                 BackColor = UiPalette.AppBackground
             };
             totalsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            totalsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            totalsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            totalsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            totalsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
-            totalsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+            totalsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            totalsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            totalsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            totalsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
             
             _lblTotalAmount = CreateTotalLabel("Amount: 0.00 EGP");
             _lblTotalDiscount = CreateTotalLabel("Discount: 0.00 EGP");
             _lblNetAmount = CreateTotalLabel("Net: 0.00 EGP");
             _lblNetAmount.Font = UiPalette.BodyFont(16F, FontStyle.Bold); 
             
-            _cmbStatus = new ComboBox
-            {
-                Anchor = AnchorStyles.Left | AnchorStyles.Right,
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                Font = UiPalette.BodyFont(12F, FontStyle.Bold),
-                ForeColor = UiPalette.Primary,
-                BackColor = UiPalette.AppBackground,
-                FlatStyle = FlatStyle.Flat,
-                Margin = new Padding(8, 12, 8, 12)
-            };
-            _cmbStatus.DataSource = Enum.GetValues(typeof(InvoiceStatus));
-            _cmbStatus.SelectedItem = InvoiceStatus.Draft;
-            _cmbStatus.SelectedIndexChanged += (s, e) => {
-                _currentInvoice.Status = (InvoiceStatus)_cmbStatus.SelectedItem;
-            };
-
             totalsLayout.Controls.Add(_lblTotalAmount, 0, 0);
             totalsLayout.Controls.Add(_lblTotalDiscount, 1, 0);
             totalsLayout.Controls.Add(_lblNetAmount, 2, 0);
-            totalsLayout.Controls.Add(_cmbStatus, 3, 0);
 
             var btnCheckout = new Button
             {
@@ -300,7 +280,7 @@ namespace UI.Views
                 if (InvokeRequired) Invoke(new Action(async () => await ProcessCheckoutAsync()));
                 else await ProcessCheckoutAsync();
             };
-            totalsLayout.Controls.Add(btnCheckout, 4, 0);
+            totalsLayout.Controls.Add(btnCheckout, 3, 0);
 
             totalsGroup.Controls.Add(totalsLayout);
 
@@ -423,7 +403,6 @@ namespace UI.Views
             _lblTotalAmount.Text = $"Amount: {_currentInvoice.TotalAmount:N2} EGP";
             _lblTotalDiscount.Text = $"Discount: {_currentInvoice.TotalDiscount:N2} EGP";
             _lblNetAmount.Text = $"Net: {_currentInvoice.NetAmount:N2} EGP";
-            _cmbStatus.SelectedItem = _currentInvoice.Status;
         }
 
         private async Task ProcessCheckoutAsync()
@@ -442,7 +421,7 @@ namespace UI.Views
                 var dto = new CreateInvoiceDto
                 {
                     CustomerId = 1,
-                    Status = _currentInvoice.Status,
+                    Status = InvoiceStatus.Finalized,
                     InvoiceDate = DateTime.Now,
                     InvoiceItems = _invoiceItems.Select(i => new CreateInvoiceItemDto
                     {
@@ -463,7 +442,7 @@ namespace UI.Views
                     _currentInvoice = new Invoice
                     {
                         InvoiceDate = DateTime.Now,
-                        Status = InvoiceStatus.Draft,
+                        Status = InvoiceStatus.Finalized,
                         InvoiceItems = new List<InvoiceItem>()
                     };
                     RecalculateTotals();

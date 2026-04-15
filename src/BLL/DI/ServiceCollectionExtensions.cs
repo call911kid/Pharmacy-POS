@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRefundService, RefundService>();
         services.AddScoped<ISupplierService, SupplierService>();
         services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<IProductService, ProductService>();
 
 
         return services;

@@ -5,8 +5,11 @@ using UI.Theme;
 
 namespace UI.Views
 {
-    public sealed class SuppliersView : UserControl
+    public sealed class SuppliersView : UserControl, ISectionView
     {
+        public string SectionTitle => "Suppliers";
+        public string SectionSubtitle => "Create, search, update, and delete supplier records.";
+
         private readonly ISupplierService _supplierService;
         private readonly BindingSource _bindingSource = new();
 

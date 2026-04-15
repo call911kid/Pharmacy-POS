@@ -30,7 +30,8 @@ namespace UI
             AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
                 ExceptionHandler.Handle(e.ExceptionObject as Exception);
 
-            ApplicationConfiguration.Initialize();
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
 
 
             var builder = WebApplication.CreateBuilder(args);
@@ -51,7 +52,7 @@ namespace UI
             builder.Services
                 .AddDALRepositories(connectionString)
                 .AddBLLServices()
-                .AddSingleton<ScannerEventBus>()
+                .AddSingleton<UI.Events.ScannerEventBus>()
                 .AddTransient<MainForm>();
 
             var app = builder.Build();

@@ -6,13 +6,19 @@ using BLL.DTOs.BatchItem;
 using BLL.Interfaces;
 using UI.Theme;
 using UI.Forms;
+using UI.Events;
 
 namespace UI.Views
 {
-    public sealed class InventoryBatchesView : UserControl
+    public sealed class InventoryBatchesView : UserControl, ISectionView
     {
+        public string SectionTitle => "Inventory Batches";
+        public string SectionSubtitle => "Receive, validate, and maintain batch records with supplier and barcode support.";
+
         private readonly IBatchService _batchService;
         private readonly ISupplierService _supplierService;
+        private readonly IProductService _productService;
+        private readonly ScannerEventBus _eventBus;
         private readonly BindingSource _bindingSource = new();
 
         private readonly TextBox _txtSearch;
@@ -25,10 +31,12 @@ namespace UI.Views
         private List<BatchSummaryDto> _allBatches = new();
         private bool _isLoading;
 
-        public InventoryBatchesView(IBatchService batchService, ISupplierService supplierService)
+        public InventoryBatchesView(IBatchService batchService, ISupplierService supplierService, IProductService productService, ScannerEventBus eventBus)
         {
             _batchService = batchService;
             _supplierService = supplierService;
+            _productService = productService;
+            _eventBus = eventBus;
 
             Dock = DockStyle.Fill;
             BackColor = UiPalette.AppBackground;
@@ -256,7 +264,7 @@ namespace UI.Views
 
         private async Task OpenBatchFormAsync(BatchSummaryDto? batch = null)
         {
-            using var form = new InventoryBatchEditorForm(_batchService, _supplierService, batch?.Id);
+            using var form = new InventoryBatchEditorForm(_batchService, _supplierService, _productService, _eventBus, batch?.Id);
             if (form.ShowDialog(this) == DialogResult.OK)
             {
                 await LoadBatchesAsync();

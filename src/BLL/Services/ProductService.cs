@@ -1,4 +1,4 @@
-using BLL.DTOs;
+using BLL.DTOs.Product;
 using BLL.Exceptions;
 using BLL.Interfaces;
 using DAL.Interfaces;
@@ -6,7 +6,7 @@ using DAL.Models;
 
 namespace BLL.Services
 {
-    public class ProductService : IProductService
+    internal sealed class ProductService : IProductService
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -15,60 +15,89 @@ namespace BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(int pageNumber, int pageSize)
         {
             var products = await _unitOfWork.Products.GetAllAsync(pageNumber, pageSize);
-            return products.Select(ToDto);
+            return products.Select(Map).ToList();
         }
 
-        public async Task<ProductDto> GetByIdAsync(int id)
+        public async Task<ProductDto?> GetProductByIdAsync(int id)
         {
-            var product = await _unitOfWork.Products.GetByIdAsync(id)
-                ?? throw new ProductNotFoundException(id);
-            return ToDto(product);
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            return product is null ? null : Map(product);
         }
 
-        public async Task<IEnumerable<ProductDto>> SearchAsync(string keyword)
+        public async Task<ProductDto?> GetProductByBarcodeAsync(string barcode)
         {
-            var products = await _unitOfWork.Products
-                .FindAsync(p => p.Name.Contains(keyword) || p.Barcode.Contains(keyword));
-            return products.Select(ToDto);
+            if (string.IsNullOrWhiteSpace(barcode))
+            {
+                return null;
         }
 
-        public async Task AddAsync(ProductDto dto)
-        {
-            var existing = await _unitOfWork.Products.FirstOrDefaultAsync(p => p.Barcode == dto.Barcode);
-            if (existing != null)
-                throw new DuplicateException($"Barcode '{dto.Barcode}' already exists.");
+            var normalizedBarcode = barcode.Trim();
+            var product = await _unitOfWork.Products.FirstOrDefaultAsync(
+                p => p.Barcode == normalizedBarcode);
 
-            await _unitOfWork.Products.AddAsync(new Product { Barcode = dto.Barcode, Name = dto.Name });
-            await _unitOfWork.SaveChangesAsync();
+            return product is null ? null : Map(product);
         }
 
-        public async Task<IEnumerable<ProductDto>> GetNearExpiryAsync(int daysThreshold)
+        public async Task<IEnumerable<ProductDto>> SearchProductsAsync(string searchTerm, int pageNumber, int pageSize)
         {
-            var limitDate = DateTime.Today.AddDays(daysThreshold);
-            var products = await _unitOfWork.Products
-                .FindAsync(p => p.BatchItems.Any(bi => bi.ExpirationDate <= limitDate && bi.QuantityRemaining > 0));
-            return products.Select(ToDto);
-        }
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return await GetAllProductsAsync(pageNumber, pageSize);
+            }
 
-        private static ProductDto ToDto(Product p)
-        {
-            var today = DateTime.Today;
-            var active = p.BatchItems?
-                .Where(bi => bi.ExpirationDate >= today && bi.QuantityRemaining > 0)
-                .OrderBy(bi => bi.ExpirationDate)
+            var normalizedSearch = searchTerm.Trim();
+            var products = await _unitOfWork.Products.FindAsync(p =>
+                p.Name.Contains(normalizedSearch) ||
+                p.Barcode.Contains(normalizedSearch));
+
+            return products
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(Map)
                 .ToList();
+        }
 
+        public async Task<ProductDto> AddProductAsync(CreateProductDto createProductDto)
+        {
+            var name = createProductDto.Name.Trim();
+            var barcode = createProductDto.Barcode.Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Product name is required.", nameof(createProductDto));
+        }
+
+            if (!string.IsNullOrWhiteSpace(barcode))
+            {
+                var existingProduct = await _unitOfWork.Products.FirstOrDefaultAsync(p => p.Barcode == barcode);
+                if (existingProduct is not null)
+        {
+                    throw new DuplicateException($"Barcode '{barcode}' already belongs to '{existingProduct.Name}'.");
+                }
+        }
+
+            var product = new Product
+        {
+                Name = name,
+                Barcode = barcode
+            };
+
+            await _unitOfWork.Products.AddAsync(product);
+            await _unitOfWork.SaveChangesAsync();
+
+            return Map(product);
+        }
+
+        private static ProductDto Map(DAL.Models.Product product)
+        {
             return new ProductDto
             {
-                Id = p.Id,
-                Barcode = p.Barcode,
-                Name = p.Name,
-                TotalStock = active?.Sum(bi => bi.QuantityRemaining) ?? 0,
-                CurrentPrice = active?.FirstOrDefault()?.MandatorySellingPrice ?? 0,
-                NearestExpiryDate = p.BatchItems?.Any() == true ? p.BatchItems.Min(bi => bi.ExpirationDate) : null
+                Id = product.Id,
+                Barcode = product.Barcode,
+                Name = product.Name
             };
         }
     }
