@@ -1,4 +1,4 @@
-﻿using BLL.DTOs.Invoice;
+using BLL.DTOs.Invoice;
 using BLL.Interfaces;
 using DAL.Interfaces;
 using DAL.Models;
@@ -12,6 +12,7 @@ using BLL.Exceptions;
 using BLL.DTOs.InvoiceItem;
 using System.Net.NetworkInformation;
 using Common.Enums;
+using BLL.Utils;
 namespace BLL.Services
 {
 
@@ -31,7 +32,8 @@ namespace BLL.Services
                 CustomerId = invoiceDto.CustomerId,
                 InvoiceDate = invoiceDto.InvoiceDate,
                 Status = InvoiceStatus.Finalized,
-                InvoiceItems = new List<InvoiceItem>()
+                InvoiceItems = new List<InvoiceItem>(),
+                Barcode = BarcodeGenerator.GenerateInvoiceBarcode()
             };
             var modifiedBatches = new List<(BatchItem batch, int subtractedQuantity)>();
             decimal totalInvoicePrice = 0;
@@ -86,10 +88,7 @@ namespace BLL.Services
                 await _unitOfWork.SaveChangesAsync();
                 throw new Exception("Operation failed. Changes were rolled back manually.", ex);
             }
-            finally
-            {
-                _unitOfWork.Dispose();
-            }
+            
         }
 
         public async Task<IEnumerable<InvoiceDto>> GetCustomerInvoicesAsync(int customerId)

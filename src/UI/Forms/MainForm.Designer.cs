@@ -28,32 +28,18 @@ namespace UI
         /// </summary>
         private void InitializeComponent()
         {
-            scannerBtn = new Button();
             SuspendLayout();
-            // 
-            // scannerBtn
-            // 
-            scannerBtn.Location = new Point(12, 12);
-            scannerBtn.Name = "scannerBtn";
-            scannerBtn.Size = new Size(149, 29);
-            scannerBtn.TabIndex = 0;
-            scannerBtn.Text = "Open Scanner QR";
-            scannerBtn.UseVisualStyleBackColor = true;
-            scannerBtn.Click += scannerBtn_Click;
-            // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(9F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(scannerBtn);
+            ClientSize = new Size(1484, 861);
             Name = "MainForm";
-            Text = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Pharmacy POS";
             ResumeLayout(false);
         }
 
         #endregion
-
-        private Button scannerBtn;
     }
 }

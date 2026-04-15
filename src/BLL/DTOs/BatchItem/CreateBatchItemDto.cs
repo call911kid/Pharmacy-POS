@@ -11,6 +11,7 @@ namespace BLL.DTOs.BatchItem
         public int BatchId { get; set; }
         public int ProductId { get; set; }
         public int QuantityReceived { get; set; }
+        public int? QuantityRemaining { get; set; }
         public DateTime ExpirationDate { get; set; }
         public decimal CostPrice { get; set; }
         public decimal MandatorySellingPrice { get; set; }
