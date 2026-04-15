@@ -31,7 +31,7 @@ namespace BLL.Services
             {
                 CustomerId = invoiceDto.CustomerId,
                 InvoiceDate = invoiceDto.InvoiceDate,
-                Status = invoiceDto.Status,
+                Status = InvoiceStatus.Finalized,
                 InvoiceItems = new List<InvoiceItem>(),
                 Barcode = BarcodeGenerator.GenerateInvoiceBarcode()
             };
