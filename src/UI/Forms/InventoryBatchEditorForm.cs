@@ -335,10 +335,7 @@ namespace UI.Forms
         {
             if (_supplierCombo.SelectedValue is not int supplierId)
             {
-<<<<<<< HEAD
                 MessageBox.Show("Please select a supplier.", "Save Batch", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-=======
-                MessageBox.Show("Please select a supplier.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -346,17 +343,12 @@ namespace UI.Forms
             if (validationErrors.Count > 0)
             {
                 MessageBox.Show(string.Join(Environment.NewLine, validationErrors), "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
->>>>>>> 22430c9dcbccc23e0159956594f0190daa650008
                 return;
             }
 
             var create = new CreateBatchDto
             {
                 SupplierId = supplierId,
-<<<<<<< HEAD
-                PurchaseDate = DateTime.Now,
-                BatchItems = _itemsGrid.Rows.Cast<DataGridViewRow>().Where(r => r.DataBoundItem is CreateBatchItemDto).Select(r => r.DataBoundItem as CreateBatchItemDto).Where(i => i is not null).Select(i => i!).ToList()
-=======
                 PurchaseDate = _purchaseDatePicker.Value.Date,
                 BatchItems = _itemsBinding.Select(item => new CreateBatchItemDto
                 {
@@ -367,7 +359,6 @@ namespace UI.Forms
                     CostPrice = item.CostPrice,
                     MandatorySellingPrice = item.MandatorySellingPrice
                 }).ToList()
->>>>>>> 22430c9dcbccc23e0159956594f0190daa650008
             };
 
             try
