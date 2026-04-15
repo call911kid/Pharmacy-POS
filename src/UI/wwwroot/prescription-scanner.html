@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Prescription Scanner</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+
+  :root {
+    --blue-dark:  #0a2d6e;
+    --blue-mid:   #1a56db;
+    --blue-light: #3b82f6;
+    --blue-pale:  #dbeafe;
+    --white:      #ffffff;
+    --gray-light: #f0f4ff;
+    --gray-mid:   #94a3b8;
+    --shadow:     0 8px 32px rgba(10,45,110,0.15);
+    --radius:     18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(160deg, #0a2d6e 0%, #1a56db 60%, #3b82f6 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 40px 0;
+    color: var(--white);
+  }
+
+  header {
+    width: 100%;
+    padding: 32px 24px 20px;
+    text-align: center;
+  }
+
+  .logo-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 50px;
+    padding: 8px 22px;
+    margin-bottom: 14px;
+  }
+
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 18px; height: 18px; }
+
+  header h1 { font-size: 1.9rem; font-weight: 900; letter-spacing: -0.5px; }
+  header p  { font-size: 0.95rem; opacity: 0.8; margin-top: 4px; }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: calc(100% - 32px);
+    max-width: 420px;
+    padding: 28px 22px;
+    color: #1e293b;
+    margin-bottom: 18px;
+  }
+
+  .card h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--blue-dark);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .capture-area {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--gray-light);
+    border-radius: 12px;
+    border: 2px dashed var(--blue-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+    overflow: hidden;
+    position: relative;
+  }
+  .capture-area:hover     { border-color: var(--blue-dark); }
+  .capture-area.has-image { border-style: solid; }
+  .capture-area img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    position: absolute; top: 0; left: 0;
+  }
+
+  .capture-placeholder {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    pointer-events: none;
+  }
+  .capture-placeholder svg  { width: 52px; height: 52px; opacity: 0.35; }
+  .capture-placeholder span { font-size: 0.9rem; color: var(--gray-mid); font-weight: 600; }
+
+  #fileInput { display: none; }
+  #cameraInput { display: none; }
+
+  .btn-row { 
+    display: flex; 
+    gap: 10px; 
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 14px 10px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, opacity 0.2s;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 7px;
+  }
+  .btn:active   { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-primary   { background: linear-gradient(135deg, var(--blue-mid), var(--blue-dark)); color: white; flex: 1; }
+  .btn-secondary { background: var(--blue-pale); color: var(--blue-dark); }
+  .btn svg       { width: 18px; height: 18px; }
+
+  .loading-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,45,110,0.82);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 18px;
+  }
+  .loading-overlay.active { display: flex; }
+
+  .spinner {
+    width: 52px; height: 52px;
+    border: 5px solid rgba(255,255,255,0.25);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-overlay p { color: white; font-size: 1.05rem; font-weight: 600; }
+
+  .result-card         { display: none; }
+  .result-card.visible { display: block; }
+
+  .patient-header {
+    background: linear-gradient(135deg, var(--blue-pale), #e0ecff);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .patient-avatar {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, var(--blue-mid), var(--blue-dark));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .patient-avatar svg { width: 24px; height: 24px; }
+
+  .patient-info .name { font-size: 1.05rem; font-weight: 700; color: var(--blue-dark); }
+  .patient-info .meta { font-size: 0.82rem; color: #64748b; margin-top: 2px; }
+
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--blue-mid);
+    margin: 18px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--blue-pale);
+  }
+
+  .med-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .med-item {
+    background: var(--gray-light);
+    border-radius: 12px;
+    padding: 14px;
+    border-left: 4px solid var(--blue-light);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    align-items: start;
+  }
+
+  .med-name  { font-size: 1rem; font-weight: 700; color: var(--blue-dark); grid-column: 1; }
+
+  .med-badge {
+    background: var(--blue-mid);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 50px;
+    white-space: nowrap;
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+
+  .med-detail { font-size: 0.82rem; color: #475569; grid-column: 1; }
+
+  .notes-box {
+    background: #fffbeb;
+    border: 1.5px solid #fbbf24;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 0.85rem;
+    color: #92400e;
+    line-height: 1.7;
+    margin-top: 10px;
+  }
+
+  .error-box {
+    background: #fef2f2;
+    border: 1.5px solid #f87171;
+    border-radius: 12px;
+    padding: 16px;
+    color: #991b1b;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    display: none;
+  }
+  .error-box.visible { display: block; }
+
+  .btn-full { width: 100%; margin-top: 18px; flex: unset; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2.5">
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+        <rect x="9" y="3" width="6" height="4" rx="1"/>
+        <path d="M9 12h6M9 16h4"/>
+      </svg>
+    </div>
+    <span style="font-weight:700;font-size:1rem;">Rx Reader</span>
+  </div>
+  <h1>Prescription Scanner</h1>
+  <p>Capture your prescription and we'll analyse it instantly</p>
+</header>
+
+<!-- Upload Card -->
+<div class="card">
+  <h2>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+      <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
+    Capture Prescription Image
+  </h2>
+
+  <div class="capture-area" id="captureArea">
+    <div class="capture-placeholder" id="placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+        <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+      <span>Tap to take or choose a photo</span>
+    </div>
+    <img id="previewImg" src="" alt="" style="display:none;" />
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this)">
+  <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleFile(this)">
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+      </svg>
+      📁 Choose File
+    </button>
+    <button class="btn btn-secondary" onclick="openCamera()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+      📷 Camera
+    </button>
+  </div>
+
+  <button class="btn btn-primary btn-full" id="analyzeBtn" onclick="analyzeImage()" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    🔍 Analyse Prescription
+  </button>
+
+  <div class="error-box" id="errorBox">
+    ❌ Analysis failed. Make sure the image is clear and try again.
+  </div>
+</div>
+
+<!-- Result Card -->
+<div class="card result-card" id="resultCard">
+  <h2>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+      <rect x="9" y="3" width="6" height="4" rx="1"/>
+      <path d="M9 12h6M9 16h4"/>
+    </svg>
+    Analysis Result
+  </h2>
+
+  <div class="patient-header">
+    <div class="patient-avatar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+    <div class="patient-info">
+      <div class="name" id="patientName">—</div>
+      <div class="meta" id="patientMeta">—</div>
+    </div>
+  </div>
+
+  <div class="section-title">💊 Prescribed Medicines</div>
+  <div class="med-list" id="medList"></div>
+
+  <div class="section-title">📋 Additional Notes</div>
+  <div class="notes-box" id="notesBox">—</div>
+
+  <button class="btn btn-secondary btn-full" onclick="resetScan()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+      <polyline points="1 4 1 10 7 10"/>
+      <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+    </svg>
+    Scan New Prescription
+  </button>
+</div>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <p>Analysing prescription…</p>
+</div>
+
+<script>
+  let base64Data = '';
+
+  function handleFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const result = e.target.result;
+      base64Data   = result.split(',')[1];
+      window._b64  = base64Data;
+
+      const img = document.getElementById('previewImg');
+      img.src = result;
+      img.style.display = 'block';
+      document.getElementById('placeholder').style.display  = 'none';
+      document.getElementById('captureArea').classList.add('has-image');
+      document.getElementById('analyzeBtn').disabled        = false;
+      document.getElementById('errorBox').classList.remove('visible');
+      document.getElementById('resultCard').classList.remove('visible');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function analyzeImage() {
+    if (!base64Data) return;
+    document.getElementById('loadingOverlay').classList.add('active');
+    document.getElementById('errorBox').classList.remove('visible');
+    try {
+      const response = await fetch('https://ai.prescriptionreader.in/api/analyze', {
+        method:  'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept':       '*/*',
+          'origin':       'https://prescriptionreader.in',
+          'referer':      'https://prescriptionreader.in/'
+        },
+        body: JSON.stringify({ image_base64: base64Data, model: 'gemini-2.5-flash-lite' })
+      });
+      const data = await response.json();
+      if (data.success && data.data) displayResult(data.data);
+      else                            showError();
+    } catch { showError(); }
+    finally  { document.getElementById('loadingOverlay').classList.remove('active'); }
+  }
+
+  function displayResult(d) {
+    document.getElementById('patientName').textContent = d.patient_name || '—';
+    document.getElementById('patientMeta').textContent =
+      'Doctor: ' + (d.doctor_name || '—') + '  ·  Date: ' + (d.date || '—');
+
+    const medList = document.getElementById('medList');
+    medList.innerHTML = '';
+    (d.medicines || []).forEach(med => {
+      const item = document.createElement('div');
+      item.className = 'med-item';
+      item.innerHTML =
+        '<div class="med-name">'   + med.name + '</div>' +
+        '<div class="med-badge">'  + clean(med.dosage) + '</div>' +
+        '<div class="med-detail">🕐 ' + clean(med.frequency) +
+          (med.instructions && med.instructions !== 'Not specified'
+            ? ' · ' + med.instructions : '') +
+        '</div>';
+      medList.appendChild(item);
+    });
+
+    document.getElementById('notesBox').textContent = d.additional_notes || '—';
+    document.getElementById('resultCard').classList.add('visible');
+    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function clean(val) { return (!val || val === 'Not specified') ? '—' : val; }
+  function showError() { document.getElementById('errorBox').classList.add('visible'); }
+
+  function openCamera() {
+    // فتح الكاميرا مباشرة
+    document.getElementById('cameraInput').click();
+  }
+
+  function resetScan() {
+    base64Data = ''; window._b64 = '';
+    document.getElementById('fileInput').value            = '';
+    document.getElementById('previewImg').style.display  = 'none';
+    document.getElementById('placeholder').style.display = 'flex';
+    document.getElementById('captureArea').classList.remove('has-image');
+    document.getElementById('analyzeBtn').disabled        = true;
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('errorBox').classList.remove('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>

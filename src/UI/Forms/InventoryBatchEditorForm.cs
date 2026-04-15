@@ -89,9 +89,15 @@ namespace UI.Forms
 
         private async Task SaveAsync()
         {
+            if (_supplierCombo.SelectedValue is not int supplierId)
+            {
+                MessageBox.Show("Please select a supplier.", "Save Batch", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             var create = new CreateBatchDto
             {
-                SupplierId = (int)_supplierCombo.SelectedValue,
+                SupplierId = supplierId,
                 PurchaseDate = DateTime.Now,
                 BatchItems = _itemsGrid.Rows.Cast<DataGridViewRow>().Where(r => r.DataBoundItem is CreateBatchItemDto).Select(r => r.DataBoundItem as CreateBatchItemDto).Where(i => i is not null).Select(i => i!).ToList()
             };

@@ -12,20 +12,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UI.Exceptions;
+using UI.Events;
 
 namespace UI
 {
-
-    public class ScannerEventBus
-    {
-        public event EventHandler<string> BarcodeScanned;
-
-        public void PublishScan(string barcode)
-        {
-            BarcodeScanned?.Invoke(this, barcode);
-        }
-    }
-
     internal static class Program
     {
         [STAThread]
@@ -79,7 +69,7 @@ namespace UI
                 var barcode = jsonDoc.RootElement.GetProperty("barcode").GetString();
 
 
-                eventBus.PublishScan(barcode);
+                    eventBus.PublishScan(barcode);
 
                 return Results.Ok(new
                 {

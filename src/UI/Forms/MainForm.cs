@@ -27,6 +27,8 @@ namespace UI
         private RoundedButton btnSuppliers = null!;
         private RoundedButton btnCustomers = null!;
         private RoundedButton btnAdjustments = null!;
+        private RoundedButton btnDrugSearch = null!;
+        private RoundedButton btnPrescriptionScanner = null!;
         private RoundedButton btnScanner = null!;
 
         public MainForm(ScannerEventBus eventBus, ISupplierService supplierService, IBatchService batchService, ICustomerService customerService, IInvoiceService invoiceService)
@@ -90,11 +92,11 @@ namespace UI
             {
                 Dock = DockStyle.Fill,
                 ColumnCount = 1,
-                RowCount = 8,
+                RowCount = 10,
                 BackColor = Color.Transparent
             };
             sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 110F));
-            for (var index = 1; index <= 6; index++)
+            for (var index = 1; index <= 8; index++)
             {
                 sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 62F));
             }
@@ -125,6 +127,8 @@ namespace UI
             btnSuppliers = CreateNavButton("Suppliers");
             btnCustomers = CreateNavButton("Customers");
             btnAdjustments = CreateNavButton("Stock Adjustments");
+            btnDrugSearch = CreateNavButton("Drug Search");
+            btnPrescriptionScanner = CreateNavButton("Prescription Scanner");
 
             sidebarLayout.Controls.Add(CreateNavRow(btnDashboard), 0, 1);
             sidebarLayout.Controls.Add(CreateNavRow(btnPos), 0, 2);
@@ -132,6 +136,8 @@ namespace UI
             sidebarLayout.Controls.Add(CreateNavRow(btnSuppliers), 0, 4);
             sidebarLayout.Controls.Add(CreateNavRow(btnCustomers), 0, 5);
             sidebarLayout.Controls.Add(CreateNavRow(btnAdjustments), 0, 6);
+            sidebarLayout.Controls.Add(CreateNavRow(btnDrugSearch), 0, 7);
+            sidebarLayout.Controls.Add(CreateNavRow(btnPrescriptionScanner), 0, 8);
 
             sidebarCard.Controls.Add(sidebarLayout);
 
@@ -258,6 +264,8 @@ namespace UI
             btnSuppliers.Click += btnSuppliers_Click;
             btnCustomers.Click += btnCustomers_Click;
             btnAdjustments.Click += btnAdjustments_Click;
+            btnDrugSearch.Click += btnDrugSearch_Click;
+            btnPrescriptionScanner.Click += btnPrescriptionScanner_Click;
             searchTextBox.Enter += searchTextBox_Enter;
             searchTextBox.Leave += searchTextBox_Leave;
 
@@ -494,6 +502,18 @@ namespace UI
             scannerForm.ShowDialog(this);
         }
 
+        private void OpenDrugSearch()
+        {
+            var form = new DrugSearchForm();
+            form.Show(this);
+        }
+
+        private void OpenPrescriptionScanner()
+        {
+            var form = new PrescriptionScannerForm();
+            form.Show(this);
+        }
+
         private void SwitchView(string key)
         {
             UserControl? view = null;
@@ -563,7 +583,7 @@ namespace UI
             
         }
 
-        private void searchTextBox_Enter(object sender, EventArgs e)
+        private void searchTextBox_Enter(object? sender, EventArgs e)
         {
             if (searchTextBox.Text == "Search barcode, patient, supplier, or batch")
             {
@@ -572,7 +592,7 @@ namespace UI
             }
         }
 
-        private void searchTextBox_Leave(object sender, EventArgs e)
+        private void searchTextBox_Leave(object? sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(searchTextBox.Text))
             {
@@ -581,13 +601,15 @@ namespace UI
             }
         }
 
-        private void btnDashboard_Click(object sender, EventArgs e) => SwitchView("dashboard");
-        private void btnPos_Click(object sender, EventArgs e) => SwitchView("pos");
-        private void btnInventory_Click(object sender, EventArgs e) => SwitchView("inventory");
-        private void btnSuppliers_Click(object sender, EventArgs e) => SwitchView("suppliers");
-        private void btnCustomers_Click(object sender, EventArgs e) => SwitchView("customers");
-        private void btnAdjustments_Click(object sender, EventArgs e) => SwitchView("adjustments");
-        private void btnScanner_Click(object sender, EventArgs e) => OpenScannerConnection();
+        private void btnDashboard_Click(object? sender, EventArgs e) => SwitchView("dashboard");
+        private void btnPos_Click(object? sender, EventArgs e) => SwitchView("pos");
+        private void btnInventory_Click(object? sender, EventArgs e) => SwitchView("inventory");
+        private void btnSuppliers_Click(object? sender, EventArgs e) => SwitchView("suppliers");
+        private void btnCustomers_Click(object? sender, EventArgs e) => SwitchView("customers");
+        private void btnAdjustments_Click(object? sender, EventArgs e) => SwitchView("adjustments");
+        private void btnDrugSearch_Click(object? sender, EventArgs e) => OpenDrugSearch();
+        private void btnPrescriptionScanner_Click(object? sender, EventArgs e) => OpenPrescriptionScanner();
+        private void btnScanner_Click(object? sender, EventArgs e) => OpenScannerConnection();
 
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
