@@ -2,11 +2,10 @@ using BLL.DTOs.Customer;
 using BLL.DTOs.Invoice;
 using BLL.Interfaces;
 using UI.Forms.CustomerDialog;
-using UI.Interfaces;
 
 namespace UI.Views.Customers
 {
-    public partial class CustomersPage : UserControl, ICustomersPage
+    public partial class CustomersPage : UserControl
     {
         private readonly ICustomerService _customerService;
         private readonly IInvoiceService _invoiceService;

@@ -15,7 +15,7 @@ using UI.Exceptions;
 using UI.Events;
 using UI.Forms.Main;
 using UI.Views.Customers;
-using UI.Interfaces;
+using UI.Views.Suppliers;
 
 namespace UI
 {
@@ -56,7 +56,8 @@ namespace UI
                 .AddDALRepositories(connectionString)
                 .AddBLLServices()
                 .AddSingleton<UI.Events.ScannerEventBus>()
-                .AddTransient<ICustomersPage, CustomersPage>()
+                .AddTransient<CustomersPage>()
+                .AddTransient<SuppliersPage>()
                 .AddTransient<Main>();
 
             var app = builder.Build();
