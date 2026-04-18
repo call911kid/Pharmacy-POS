@@ -113,6 +113,9 @@ namespace BLL.Services
             {
                 Id = inv.Id,
                 CustomerId = inv.CustomerId,
+                CustomerName = inv.Customer?.Name ?? string.Empty,
+                CustomerPhone = inv.Customer?.Phone ?? string.Empty,
+                Barcode = inv.Barcode ?? string.Empty,
                 Status = inv.Status.ToString(),
                 InvoiceDate = inv.InvoiceDate,
                 TotalAmount = inv.TotalAmount,

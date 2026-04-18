@@ -16,8 +16,10 @@ using UI.Events;
 using UI.Forms;
 using UI.Forms.BatchDialog;
 using UI.Forms.Main;
+using UI.Forms.InvoicePreviewForm;
 using UI.Forms.ProductDialog;
 using UI.Forms.SupplierDialog;
+using UI.Printing;
 using UI.Views.Customers;
 using UI.Views.Dashboard;
 using UI.Views.Inventory;
@@ -66,7 +68,10 @@ namespace UI
                 .AddTransient<ProductDialog>()
                 .AddTransient<ProductEditorForm>()
                 .AddTransient<SupplierDialog>()
+                .AddTransient<IInvoicePdfGenerator, InvoicePdfGenerator>()
+                .AddTransient<IInvoicePreviewService, InvoicePreviewService>()
                 .AddTransient<BatchDialog>()
+                .AddTransient<InvoicePreviewForm>()
                 .AddTransient<ScannerConnectionForm>()
                 .AddTransient<DashboardPage>()
                 .AddTransient<CustomersPage>()

@@ -3,6 +3,7 @@ using BLL.DTOs.Invoice;
 using BLL.DTOs.InvoiceItem;
 using BLL.Interfaces;
 using UI.Forms.CustomerDialog;
+using UI.Printing;
 using UI.Theme;
 
 namespace UI.Views.Customers
@@ -11,16 +12,21 @@ namespace UI.Views.Customers
     {
         private readonly ICustomerService _customerService;
         private readonly IInvoiceService _invoiceService;
+        private readonly IInvoicePreviewService _invoicePreviewService;
         private readonly BindingSource _customersBindingSource = new();
         private readonly BindingSource _invoicesBindingSource = new();
         private readonly BindingSource _invoiceItemsBindingSource = new();
         private IReadOnlyList<CustomerDto> _customers = Array.Empty<CustomerDto>();
         private bool _isLoading;
 
-        public CustomersPage(ICustomerService customerService, IInvoiceService invoiceService)
+        public CustomersPage(
+            ICustomerService customerService,
+            IInvoiceService invoiceService,
+            IInvoicePreviewService invoicePreviewService)
         {
             _customerService = customerService;
             _invoiceService = invoiceService;
+            _invoicePreviewService = invoicePreviewService;
             InitializeComponent();
             ConfigureGrids();
             SubscribeToEvents();
@@ -63,6 +69,7 @@ namespace UI.Views.Customers
             searchTextBox.TextChanged += (_, _) => ApplyFilter();
             customersGrid.SelectionChanged += async (_, _) => await LoadSelectedCustomerInvoicesAsync();
             customerInvoicesGrid.SelectionChanged += (_, _) => LoadSelectedInvoiceItems();
+            customerInvoicesGrid.DoubleClick += async (_, _) => await PreviewSelectedInvoiceAsync();
             addBtn.Click += async (_, _) => await OpenCustomerDialogAsync();
             editBtn.Click += async (_, _) => await OpenCustomerDialogAsync(GetSelectedCustomer());
             deleteBtn.Click += async (_, _) => await DeleteSelectedCustomerAsync();
@@ -138,6 +145,27 @@ namespace UI.Views.Customers
             }
 
             _invoiceItemsBindingSource.DataSource = invoice.InvoiceItems.ToList();
+        }
+
+        private async Task PreviewSelectedInvoiceAsync()
+        {
+            if (customerInvoicesGrid.CurrentRow?.DataBoundItem is not InvoiceDto invoice)
+            {
+                return;
+            }
+
+            try
+            {
+                await _invoicePreviewService.PreviewAsync(this, invoice);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "Invoice Preview",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private async Task OpenCustomerDialogAsync(CustomerDto? customer = null)
