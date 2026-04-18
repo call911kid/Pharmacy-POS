@@ -19,6 +19,7 @@ using UI.Forms.Main;
 using UI.Forms.SupplierDialog;
 using UI.Views.Customers;
 using UI.Views.Inventory;
+using UI.Views.POS;
 using UI.Views.Suppliers;
 
 namespace UI
@@ -59,13 +60,14 @@ namespace UI
             builder.Services
                 .AddDALRepositories(connectionString)
                 .AddBLLServices()
-                .AddSingleton<UI.Events.ScannerEventBus>()
+                .AddSingleton<ScannerEventBus>()
                 .AddTransient<ProductEditorForm>()
                 .AddTransient<SupplierDialog>()
                 .AddTransient<BatchDialog>()
                 .AddTransient<ScannerConnectionForm>()
                 .AddTransient<CustomersPage>()
                 .AddTransient<InventoryPage>()
+                .AddTransient<PosPage>()
                 .AddTransient<SuppliersPage>()
                 .AddTransient<Main>();
 

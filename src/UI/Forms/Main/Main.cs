@@ -2,6 +2,7 @@ using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using UI.Views.Customers;
 using UI.Views.Inventory;
+using UI.Views.POS;
 using UI.Views.Suppliers;
 
 namespace UI.Forms.Main
@@ -10,18 +11,21 @@ namespace UI.Forms.Main
     {
         private readonly Control _customersPage;
         private readonly Control _inventoryPage;
+        private readonly Control _posPage;
         private readonly Control _suppliersPage;
         private readonly IServiceProvider _serviceProvider;
 
         public Main(
             CustomersPage customersPage,
             InventoryPage inventoryPage,
+            PosPage posPage,
             SuppliersPage suppliersPage,
             IServiceProvider serviceProvider)
         {
             InitializeComponent();
             _customersPage = customersPage;
             _inventoryPage = inventoryPage;
+            _posPage = posPage;
             _suppliersPage = suppliersPage;
             _serviceProvider = serviceProvider;
             SubscribeToNavigationEvents();
@@ -32,6 +36,7 @@ namespace UI.Forms.Main
         {
             customersBtn.Click += (_, _) => OpenScreen(_customersPage);
             inventoryBtn.Click += (_, _) => OpenScreen(_inventoryPage);
+            posBtn.Click += (_, _) => OpenScreen(_posPage);
             suppliersBtn.Click += (_, _) => OpenScreen(_suppliersPage);
             scannerBtn.Click += (_, _) => OpenScannerConnection();
         }
