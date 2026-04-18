@@ -32,6 +32,10 @@ namespace UI.Forms.CustomerDialog
             saveBtn.Click += async (_, _) => await SaveAsync();
             clearBtn.Click += (_, _) => ClearFields();
             cancelBtn.Click += (_, _) => Close();
+            nameTextBox.KeyPress += NameTextBox_KeyPress;
+            phoneTextBox.KeyPress += PhoneTextBox_KeyPress;
+            nameTextBox.TextChanged += (_, _) => SanitizeNameInput();
+            phoneTextBox.TextChanged += (_, _) => SanitizePhoneInput();
         }
 
         private void PopulateFields()
@@ -140,6 +144,65 @@ namespace UI.Forms.CustomerDialog
             saveBtn.Enabled = !isBusy;
             clearBtn.Enabled = !isBusy;
             cancelBtn.Enabled = !isBusy;
+        }
+
+        private static void NameTextBox_KeyPress(object? sender, KeyPressEventArgs e)
+        {
+            if (char.IsControl(e.KeyChar))
+            {
+                return;
+            }
+
+            if (!char.IsLetter(e.KeyChar) && !char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private static void PhoneTextBox_KeyPress(object? sender, KeyPressEventArgs e)
+        {
+            if (char.IsControl(e.KeyChar))
+            {
+                return;
+            }
+
+            if (!char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void SanitizeNameInput()
+        {
+            var sanitized = new string(nameTextBox.Text
+                .Where(ch => char.IsLetter(ch) || char.IsWhiteSpace(ch))
+                .ToArray());
+
+            if (nameTextBox.Text == sanitized)
+            {
+                return;
+            }
+
+            var selectionStart = Math.Min(nameTextBox.SelectionStart, sanitized.Length);
+            nameTextBox.Text = sanitized;
+            nameTextBox.SelectionStart = selectionStart;
+        }
+
+        private void SanitizePhoneInput()
+        {
+            var sanitized = new string(phoneTextBox.Text
+                .Where(char.IsDigit)
+                .Take(11)
+                .ToArray());
+
+            if (phoneTextBox.Text == sanitized)
+            {
+                return;
+            }
+
+            var selectionStart = Math.Min(phoneTextBox.SelectionStart, sanitized.Length);
+            phoneTextBox.Text = sanitized;
+            phoneTextBox.SelectionStart = selectionStart;
         }
     }
 }

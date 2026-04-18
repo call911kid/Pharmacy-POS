@@ -146,6 +146,7 @@
             phoneTextBox.Dock = DockStyle.Fill;
             phoneTextBox.Location = new Point(12, 36);
             phoneTextBox.Margin = new Padding(12, 4, 12, 8);
+            phoneTextBox.MaxLength = 11;
             phoneTextBox.Name = "phoneTextBox";
             phoneTextBox.Size = new Size(379, 27);
             phoneTextBox.TabIndex = 1;

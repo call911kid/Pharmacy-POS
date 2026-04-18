@@ -26,14 +26,11 @@ namespace UI.Views.Dashboard
         {
             BackColor = UiPalette.AppBackground;
             rootLayout.BackColor = UiPalette.AppBackground;
-            summaryLayout.BackColor = UiPalette.AppBackground;
+            headerLayout.BackColor = UiPalette.AppBackground;
             middleLayout.BackColor = UiPalette.AppBackground;
             alertsLayout.BackColor = UiPalette.AppBackground;
 
-            StyleSummary(customersSummary, customersTitleLbl, customersValueLbl);
-            StyleSummary(suppliersSummary, suppliersTitleLbl, suppliersValueLbl);
-            StyleSummary(productsSummary, productsTitleLbl, productsValueLbl);
-            StyleSummary(batchesSummary, batchesTitleLbl, batchesValueLbl);
+            StyleHeader();
 
             StyleSection(recentInvoicesLayout, recentInvoicesTitleLbl);
             StyleSection(recentBatchesLayout, recentBatchesTitleLbl);
@@ -41,15 +38,10 @@ namespace UI.Views.Dashboard
             StyleSection(expiringLayout, expiringTitleLbl);
         }
 
-        private static void StyleSummary(TableLayoutPanel summary, Label titleLabel, Label valueLabel)
+        private void StyleHeader()
         {
-            summary.BackColor = UiPalette.AppBackground;
-
-            titleLabel.Font = UiPalette.BodyFont(9f);
-            titleLabel.ForeColor = UiPalette.TextMuted;
-
-            valueLabel.Font = UiPalette.BodyFont(16f, FontStyle.Bold);
-            valueLabel.ForeColor = UiPalette.TextPrimary;
+            
+            
         }
 
         private static void StyleSection(TableLayoutPanel sectionLayout, Label titleLabel)
@@ -165,11 +157,7 @@ namespace UI.Views.Dashboard
             try
             {
                 var overview = await _dashboardService.GetOverviewAsync();
-
-                customersValueLbl.Text = overview.CustomersCount.ToString();
-                suppliersValueLbl.Text = overview.SuppliersCount.ToString();
-                productsValueLbl.Text = overview.ProductsCount.ToString();
-                batchesValueLbl.Text = overview.BatchesCount.ToString();
+                label2.Text = DateTime.Today.ToString("dddd, dd MMM yyyy");
 
                 _recentInvoicesBindingSource.DataSource = overview.RecentInvoices;
                 _recentBatchesBindingSource.DataSource = overview.RecentBatches;
