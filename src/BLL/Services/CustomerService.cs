@@ -52,6 +52,23 @@ namespace BLL.Services
             }
         }
 
+        public async Task<IReadOnlyList<CustomerDto>> GetAllCustomersAsync()
+        {
+            try
+            {
+                var customers = await _unitOfWork.Customers.GetAllAsync(1, int.MaxValue);
+                return customers
+                    .Select(MapToDto)
+                    .OfType<CustomerDto>()
+                    .OrderBy(c => c.Name)
+                    .ToList();
+            }
+            catch
+            {
+                return new List<CustomerDto>();
+            }
+        }
+
         public async Task<IReadOnlyList<CustomerDto>> FindByNameAsync(string name)
         {
             try
