@@ -12,6 +12,8 @@ namespace BLL.DTOs.Batch
         public DateTime PurchaseDate { get; set; }
         public int SupplierId { get; set; }
         public string SupplierName { get; set; }
-        
+        public int ItemsCount { get; set; }
+        public int TotalQuantityReceived { get; set; }
+        public int TotalQuantityRemaining { get; set; }
     }
 }
