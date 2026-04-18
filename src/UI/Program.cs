@@ -18,6 +18,7 @@ using UI.Forms.BatchDialog;
 using UI.Forms.Main;
 using UI.Forms.SupplierDialog;
 using UI.Views.Customers;
+using UI.Views.Dashboard;
 using UI.Views.Inventory;
 using UI.Views.POS;
 using UI.Views.Suppliers;
@@ -65,6 +66,7 @@ namespace UI
                 .AddTransient<SupplierDialog>()
                 .AddTransient<BatchDialog>()
                 .AddTransient<ScannerConnectionForm>()
+                .AddTransient<DashboardPage>()
                 .AddTransient<CustomersPage>()
                 .AddTransient<InventoryPage>()
                 .AddTransient<PosPage>()

@@ -1,6 +1,7 @@
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using UI.Views.Customers;
+using UI.Views.Dashboard;
 using UI.Views.Inventory;
 using UI.Views.POS;
 using UI.Views.Suppliers;
@@ -9,6 +10,7 @@ namespace UI.Forms.Main
 {
     public partial class Main : Form
     {
+        private readonly Control _dashboardPage;
         private readonly Control _customersPage;
         private readonly Control _inventoryPage;
         private readonly Control _posPage;
@@ -16,6 +18,7 @@ namespace UI.Forms.Main
         private readonly IServiceProvider _serviceProvider;
 
         public Main(
+            DashboardPage dashboardPage,
             CustomersPage customersPage,
             InventoryPage inventoryPage,
             PosPage posPage,
@@ -23,17 +26,19 @@ namespace UI.Forms.Main
             IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            _dashboardPage = dashboardPage;
             _customersPage = customersPage;
             _inventoryPage = inventoryPage;
             _posPage = posPage;
             _suppliersPage = suppliersPage;
             _serviceProvider = serviceProvider;
             SubscribeToNavigationEvents();
-            OpenScreen(_customersPage);
+            OpenScreen(_dashboardPage);
         }
 
         private void SubscribeToNavigationEvents()
         {
+            dashboardBtn.Click += (_, _) => OpenScreen(_dashboardPage);
             customersBtn.Click += (_, _) => OpenScreen(_customersPage);
             inventoryBtn.Click += (_, _) => OpenScreen(_inventoryPage);
             posBtn.Click += (_, _) => OpenScreen(_posPage);
