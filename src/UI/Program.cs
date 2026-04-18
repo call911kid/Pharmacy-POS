@@ -16,6 +16,7 @@ using UI.Events;
 using UI.Forms;
 using UI.Forms.BatchDialog;
 using UI.Forms.Main;
+using UI.Forms.ProductDialog;
 using UI.Forms.SupplierDialog;
 using UI.Views.Customers;
 using UI.Views.Dashboard;
@@ -62,6 +63,7 @@ namespace UI
                 .AddDALRepositories(connectionString)
                 .AddBLLServices()
                 .AddSingleton<ScannerEventBus>()
+                .AddTransient<ProductDialog>()
                 .AddTransient<ProductEditorForm>()
                 .AddTransient<SupplierDialog>()
                 .AddTransient<BatchDialog>()

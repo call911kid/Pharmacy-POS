@@ -22,6 +22,7 @@ namespace UI.Forms.BatchDialog
             rootLayout = new TableLayoutPanel();
             headerLayout = new TableLayoutPanel();
             supplierLabel = new Label();
+            supplierSearchTextBox = new TextBox();
             supplierComboBox = new ComboBox();
             addSupplierBtn = new Button();
             purchaseDateLabel = new Label();
@@ -79,15 +80,18 @@ namespace UI.Forms.BatchDialog
             // 
             // headerLayout
             // 
-            headerLayout.ColumnCount = 3;
+            headerLayout.ColumnCount = 4;
             headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120F));
+            headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 240F));
             headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 160F));
             headerLayout.Controls.Add(supplierLabel, 0, 0);
-            headerLayout.Controls.Add(supplierComboBox, 1, 0);
-            headerLayout.Controls.Add(addSupplierBtn, 2, 0);
+            headerLayout.Controls.Add(supplierSearchTextBox, 1, 0);
+            headerLayout.Controls.Add(supplierComboBox, 2, 0);
+            headerLayout.Controls.Add(addSupplierBtn, 3, 0);
             headerLayout.Controls.Add(purchaseDateLabel, 0, 1);
             headerLayout.Controls.Add(purchaseDatePicker, 1, 1);
+            headerLayout.SetColumnSpan(purchaseDatePicker, 2);
             headerLayout.Dock = DockStyle.Fill;
             headerLayout.Location = new Point(17, 17);
             headerLayout.Name = "headerLayout";
@@ -107,16 +111,26 @@ namespace UI.Forms.BatchDialog
             supplierLabel.Text = "Supplier";
             supplierLabel.TextAlign = ContentAlignment.MiddleLeft;
             // 
+            // supplierSearchTextBox
+            // 
+            supplierSearchTextBox.Dock = DockStyle.Fill;
+            supplierSearchTextBox.Location = new Point(123, 6);
+            supplierSearchTextBox.Margin = new Padding(3, 6, 3, 6);
+            supplierSearchTextBox.Name = "supplierSearchTextBox";
+            supplierSearchTextBox.PlaceholderText = "Search by supplier name or phone";
+            supplierSearchTextBox.Size = new Size(234, 27);
+            supplierSearchTextBox.TabIndex = 1;
+            // 
             // supplierComboBox
             // 
             supplierComboBox.Dock = DockStyle.Fill;
             supplierComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             supplierComboBox.FormattingEnabled = true;
-            supplierComboBox.Location = new Point(123, 6);
+            supplierComboBox.Location = new Point(363, 6);
             supplierComboBox.Margin = new Padding(3, 6, 3, 6);
             supplierComboBox.Name = "supplierComboBox";
-            supplierComboBox.Size = new Size(800, 28);
-            supplierComboBox.TabIndex = 1;
+            supplierComboBox.Size = new Size(560, 28);
+            supplierComboBox.TabIndex = 2;
             // 
             // addSupplierBtn
             // 
@@ -125,7 +139,7 @@ namespace UI.Forms.BatchDialog
             addSupplierBtn.Margin = new Padding(6);
             addSupplierBtn.Name = "addSupplierBtn";
             addSupplierBtn.Size = new Size(148, 28);
-            addSupplierBtn.TabIndex = 2;
+            addSupplierBtn.TabIndex = 3;
             addSupplierBtn.Text = "Add Supplier";
             addSupplierBtn.UseVisualStyleBackColor = true;
             // 
@@ -147,7 +161,7 @@ namespace UI.Forms.BatchDialog
             purchaseDatePicker.Margin = new Padding(3, 6, 3, 6);
             purchaseDatePicker.Name = "purchaseDatePicker";
             purchaseDatePicker.Size = new Size(180, 27);
-            purchaseDatePicker.TabIndex = 4;
+            purchaseDatePicker.TabIndex = 5;
             // 
             // scannerLayout
             // 
@@ -271,7 +285,7 @@ namespace UI.Forms.BatchDialog
             productIdColumn.MinimumWidth = 6;
             productIdColumn.Name = "productIdColumn";
             productIdColumn.ReadOnly = true;
-            productIdColumn.Width = 90;
+            productIdColumn.Width = 80;
             // 
             // barcodeColumn
             // 
@@ -279,7 +293,7 @@ namespace UI.Forms.BatchDialog
             barcodeColumn.MinimumWidth = 6;
             barcodeColumn.Name = "barcodeColumn";
             barcodeColumn.ReadOnly = true;
-            barcodeColumn.Width = 150;
+            barcodeColumn.Width = 140;
             // 
             // productColumn
             // 
@@ -294,7 +308,7 @@ namespace UI.Forms.BatchDialog
             qtyReceivedColumn.HeaderText = "Qty Received";
             qtyReceivedColumn.MinimumWidth = 6;
             qtyReceivedColumn.Name = "qtyReceivedColumn";
-            qtyReceivedColumn.Width = 110;
+            qtyReceivedColumn.Width = 95;
             // 
             // qtyRemainingColumn
             // 
@@ -302,28 +316,28 @@ namespace UI.Forms.BatchDialog
             qtyRemainingColumn.MinimumWidth = 6;
             qtyRemainingColumn.Name = "qtyRemainingColumn";
             qtyRemainingColumn.ReadOnly = true;
-            qtyRemainingColumn.Width = 95;
+            qtyRemainingColumn.Width = 90;
             // 
             // expiryColumn
             // 
             expiryColumn.HeaderText = "Expiry";
             expiryColumn.MinimumWidth = 6;
             expiryColumn.Name = "expiryColumn";
-            expiryColumn.Width = 120;
+            expiryColumn.Width = 110;
             // 
             // costPriceColumn
             // 
             costPriceColumn.HeaderText = "Cost";
             costPriceColumn.MinimumWidth = 6;
             costPriceColumn.Name = "costPriceColumn";
-            costPriceColumn.Width = 95;
+            costPriceColumn.Width = 90;
             // 
             // sellingPriceColumn
             // 
-            sellingPriceColumn.HeaderText = "Sell Price";
+            sellingPriceColumn.HeaderText = "Sell";
             sellingPriceColumn.MinimumWidth = 6;
             sellingPriceColumn.Name = "sellingPriceColumn";
-            sellingPriceColumn.Width = 95;
+            sellingPriceColumn.Width = 90;
             // 
             // actionsPanel
             // 
@@ -414,6 +428,7 @@ namespace UI.Forms.BatchDialog
         private TableLayoutPanel rootLayout;
         private TableLayoutPanel headerLayout;
         private Label supplierLabel;
+        private TextBox supplierSearchTextBox;
         private ComboBox supplierComboBox;
         private Button addSupplierBtn;
         private Label purchaseDateLabel;

@@ -27,6 +27,7 @@ namespace BLL.Services
                 Id = item.Id,
                 InvoiceId = item.InvoiceId,
                 ProductId = item.BatchItem?.ProductId ?? 0,
+                ProductName = item.BatchItem?.Product?.Name ?? $"Product #{item.BatchItem?.ProductId ?? 0}",
                 Quantity = item.Quantity,
                 UnitPrice = item.OriginalPrice
             };
@@ -41,6 +42,7 @@ namespace BLL.Services
                 Id = item.Id,
                 InvoiceId = item.InvoiceId,
                 ProductId = item.BatchItem?.ProductId ?? 0,
+                ProductName = item.BatchItem?.Product?.Name ?? $"Product #{item.BatchItem?.ProductId ?? 0}",
                 Quantity = item.Quantity,
                 UnitPrice = item.OriginalPrice
             });

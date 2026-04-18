@@ -4,6 +4,7 @@ using BLL.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using UI.Events;
 using UI.Forms.BatchDialog;
+using UI.Theme;
 
 namespace UI.Views.Inventory
 {
@@ -44,6 +45,9 @@ namespace UI.Views.Inventory
 
             batchItemsGrid.AutoGenerateColumns = false;
             batchItemsGrid.DataSource = _batchItemsBindingSource;
+
+            UiGridTheme.ApplyReadOnly(batchesGrid);
+            UiGridTheme.ApplyReadOnly(batchItemsGrid);
 
             batchIdColumn.DataPropertyName = nameof(BatchSummaryDto.Id);
             supplierColumn.DataPropertyName = nameof(BatchSummaryDto.SupplierName);

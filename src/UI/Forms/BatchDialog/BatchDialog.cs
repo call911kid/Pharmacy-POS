@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Threading;
 using BLL.DTOs.Batch;
 using BLL.DTOs.BatchItem;
 using BLL.DTOs.Product;
@@ -7,6 +8,8 @@ using BLL.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using UI.Events;
 using UI.Forms;
+using ProductDialogForm = UI.Forms.ProductDialog.ProductDialog;
+using UI.Theme;
 using SupplierDialogForm = UI.Forms.SupplierDialog.SupplierDialog;
 
 namespace UI.Forms.BatchDialog
@@ -20,6 +23,8 @@ namespace UI.Forms.BatchDialog
         private readonly IServiceProvider _serviceProvider;
         private readonly int? _batchId;
         private readonly BindingList<BatchItemEditorRow> _itemsBinding = new();
+        private List<SupplierDto> _suppliers = new();
+        private readonly SemaphoreSlim _barcodeLookupLock = new(1, 1);
 
         private bool _isBusy;
 
@@ -90,6 +95,7 @@ namespace UI.Forms.BatchDialog
         {
             itemsGrid.AutoGenerateColumns = false;
             itemsGrid.DataSource = _itemsBinding;
+            UiGridTheme.ApplyEditable(itemsGrid);
 
             productIdColumn.DataPropertyName = nameof(BatchItemEditorRow.ProductId);
             barcodeColumn.DataPropertyName = nameof(BatchItemEditorRow.Barcode);
@@ -103,6 +109,8 @@ namespace UI.Forms.BatchDialog
             expiryColumn.DefaultCellStyle.Format = "d";
             costPriceColumn.DefaultCellStyle.Format = "0.00";
             sellingPriceColumn.DefaultCellStyle.Format = "0.00";
+            qtyReceivedColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            qtyRemainingColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
         }
 
         private void SubscribeToEvents()
@@ -120,6 +128,7 @@ namespace UI.Forms.BatchDialog
             };
 
             useBarcodeBtn.Click += async (_, _) => await AssignProductByBarcodeAsync(barcodeTextBox.Text.Trim(), true);
+            supplierSearchTextBox.TextChanged += (_, _) => ApplySupplierFilter();
             addProductBtn.Click += async (_, _) => await OpenAddProductAsync();
             addSupplierBtn.Click += async (_, _) => await OpenAddSupplierAsync();
             addItemBtn.Click += (_, _) => AddNewItem();
@@ -163,16 +172,39 @@ namespace UI.Forms.BatchDialog
 
         private async Task LoadSuppliersAsync(int? selectedSupplierId = null)
         {
-            var suppliers = (await _supplierService.GetAllSuppliersAsync(1, 500)).ToList();
-            supplierComboBox.DataSource = suppliers;
-            supplierComboBox.DisplayMember = nameof(SupplierDto.Name);
-            supplierComboBox.ValueMember = nameof(SupplierDto.Id);
+            _suppliers = (await _supplierService.GetAllSuppliersAsync(1, 500)).ToList();
+            ApplySupplierFilter(selectedSupplierId);
+        }
 
-            if (selectedSupplierId is int supplierId)
+        private void ApplySupplierFilter(int? selectedSupplierId = null)
+        {
+            var searchTerm = supplierSearchTextBox.Text.Trim();
+            var filteredSuppliers = string.IsNullOrWhiteSpace(searchTerm)
+                ? _suppliers
+                : _suppliers
+                    .Where(supplier =>
+                        supplier.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        supplier.Phone.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+            var supplierOptions = filteredSuppliers
+                .Select(supplier => new SupplierOption
+                {
+                    Id = supplier.Id,
+                    DisplayText = $"{supplier.Name} - {supplier.Phone}"
+                })
+                .ToList();
+
+            supplierComboBox.DataSource = null;
+            supplierComboBox.DisplayMember = nameof(SupplierOption.DisplayText);
+            supplierComboBox.ValueMember = nameof(SupplierOption.Id);
+            supplierComboBox.DataSource = supplierOptions;
+
+            if (selectedSupplierId is int supplierId && supplierOptions.Any(supplier => supplier.Id == supplierId))
             {
                 supplierComboBox.SelectedValue = supplierId;
             }
-            else if (suppliers.Count > 0)
+            else if (supplierOptions.Count > 0)
             {
                 supplierComboBox.SelectedIndex = 0;
             }
@@ -181,7 +213,7 @@ namespace UI.Forms.BatchDialog
         private async Task PopulateBatchAsync(int batchId)
         {
             var batch = await _batchService.GetBatchByIdAsync(batchId);
-            supplierComboBox.SelectedValue = batch.SupplierId;
+            ApplySupplierFilter(batch.SupplierId);
             purchaseDatePicker.Value = batch.PurchaseDate;
             _itemsBinding.Clear();
 
@@ -320,7 +352,7 @@ namespace UI.Forms.BatchDialog
 
         private async Task OpenAddProductAsync()
         {
-            using var dialog = ActivatorUtilities.CreateInstance<ProductEditorForm>(_serviceProvider, barcodeTextBox.Text.Trim());
+            using var dialog = ActivatorUtilities.CreateInstance<ProductDialogForm>(_serviceProvider, barcodeTextBox.Text.Trim());
             if (dialog.ShowDialog(this) == DialogResult.OK && dialog.CreatedProduct is not null)
             {
                 barcodeTextBox.Text = dialog.CreatedProduct.Barcode;
@@ -358,6 +390,7 @@ namespace UI.Forms.BatchDialog
                     supplierComboBox.SelectedIndex = 0;
                 }
 
+                supplierSearchTextBox.Clear();
                 purchaseDatePicker.Value = DateTime.Today;
                 barcodeTextBox.Clear();
                 scanStatusLabel.Text = "Select a row and scan a product barcode to attach it quickly.";
@@ -372,7 +405,7 @@ namespace UI.Forms.BatchDialog
 
         private void OnBarcodeScanned(object? sender, string barcode)
         {
-            if (IsDisposed || string.IsNullOrWhiteSpace(barcode))
+            if (IsDisposed || string.IsNullOrWhiteSpace(barcode) || !CanHandleScannerInput())
             {
                 return;
             }
@@ -386,15 +419,28 @@ namespace UI.Forms.BatchDialog
             _ = AssignProductByBarcodeAsync(barcode, true);
         }
 
+        private bool CanHandleScannerInput()
+        {
+            return Visible
+                && TopLevel
+                && ReferenceEquals(Form.ActiveForm, this);
+        }
+
         private async Task AssignProductByBarcodeAsync(string barcode, bool focusGridAfterLookup)
         {
-            if (string.IsNullOrWhiteSpace(barcode) || _isBusy)
+            if (string.IsNullOrWhiteSpace(barcode))
             {
                 return;
             }
 
+            await _barcodeLookupLock.WaitAsync();
             try
             {
+                if (_isBusy)
+                {
+                    return;
+                }
+
                 ToggleBusyState(true);
                 barcodeTextBox.Text = barcode;
 
@@ -428,6 +474,7 @@ namespace UI.Forms.BatchDialog
             finally
             {
                 ToggleBusyState(false);
+                _barcodeLookupLock.Release();
             }
         }
 
@@ -492,6 +539,7 @@ namespace UI.Forms.BatchDialog
         {
             _isBusy = isBusy;
             supplierComboBox.Enabled = !isBusy;
+            supplierSearchTextBox.Enabled = !isBusy;
             addSupplierBtn.Enabled = !isBusy;
             purchaseDatePicker.Enabled = !isBusy;
             barcodeTextBox.Enabled = !isBusy;
@@ -583,6 +631,12 @@ namespace UI.Forms.BatchDialog
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
                 return true;
             }
+        }
+
+        private sealed class SupplierOption
+        {
+            public int Id { get; set; }
+            public string DisplayText { get; set; } = string.Empty;
         }
     }
 }

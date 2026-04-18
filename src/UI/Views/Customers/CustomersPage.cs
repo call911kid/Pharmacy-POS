@@ -1,7 +1,9 @@
 using BLL.DTOs.Customer;
 using BLL.DTOs.Invoice;
+using BLL.DTOs.InvoiceItem;
 using BLL.Interfaces;
 using UI.Forms.CustomerDialog;
+using UI.Theme;
 
 namespace UI.Views.Customers
 {
@@ -11,6 +13,7 @@ namespace UI.Views.Customers
         private readonly IInvoiceService _invoiceService;
         private readonly BindingSource _customersBindingSource = new();
         private readonly BindingSource _invoicesBindingSource = new();
+        private readonly BindingSource _invoiceItemsBindingSource = new();
         private IReadOnlyList<CustomerDto> _customers = Array.Empty<CustomerDto>();
         private bool _isLoading;
 
@@ -30,14 +33,28 @@ namespace UI.Views.Customers
 
             customerInvoicesGrid.AutoGenerateColumns = false;
             customerInvoicesGrid.DataSource = _invoicesBindingSource;
+            invoiceItemsGrid.AutoGenerateColumns = false;
+            invoiceItemsGrid.DataSource = _invoiceItemsBindingSource;
+
+            UiGridTheme.ApplyReadOnly(customersGrid);
+            UiGridTheme.ApplyReadOnly(customerInvoicesGrid);
+            UiGridTheme.ApplyReadOnly(invoiceItemsGrid);
 
             Id.DataPropertyName = nameof(InvoiceDto.Id);
             InvoiceDate.DataPropertyName = nameof(InvoiceDto.InvoiceDate);
             TotalAmount.DataPropertyName = nameof(InvoiceDto.TotalAmount);
             Status.DataPropertyName = nameof(InvoiceDto.Status);
+            itemProductNameColumn.DataPropertyName = nameof(InvoiceItemDto.ProductName);
+            itemQuantityColumn.DataPropertyName = nameof(InvoiceItemDto.Quantity);
+            itemUnitPriceColumn.DataPropertyName = nameof(InvoiceItemDto.UnitPrice);
+            itemTotalColumn.DataPropertyName = nameof(InvoiceItemDto.TotalPrice);
 
             TotalAmount.DefaultCellStyle.Format = "0.00 'EGP'";
-            TotalAmount.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            TotalAmount.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            itemUnitPriceColumn.DefaultCellStyle.Format = "0.00 'EGP'";
+            itemUnitPriceColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            itemTotalColumn.DefaultCellStyle.Format = "0.00 'EGP'";
+            itemTotalColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
         }
 
         private void SubscribeToEvents()
@@ -45,6 +62,7 @@ namespace UI.Views.Customers
             Load += async (_, _) => await LoadCustomersAsync();
             searchTextBox.TextChanged += (_, _) => ApplyFilter();
             customersGrid.SelectionChanged += async (_, _) => await LoadSelectedCustomerInvoicesAsync();
+            customerInvoicesGrid.SelectionChanged += (_, _) => LoadSelectedInvoiceItems();
             addBtn.Click += async (_, _) => await OpenCustomerDialogAsync();
             editBtn.Click += async (_, _) => await OpenCustomerDialogAsync(GetSelectedCustomer());
             deleteBtn.Click += async (_, _) => await DeleteSelectedCustomerAsync();
@@ -94,6 +112,7 @@ namespace UI.Views.Customers
             if (selectedCustomer is null)
             {
                 _invoicesBindingSource.DataSource = new List<InvoiceDto>();
+                _invoiceItemsBindingSource.DataSource = new List<InvoiceItemDto>();
                 return;
             }
 
@@ -101,11 +120,24 @@ namespace UI.Views.Customers
             {
                 var invoices = await _invoiceService.GetCustomerInvoicesAsync(selectedCustomer.Id);
                 _invoicesBindingSource.DataSource = invoices.ToList();
+                LoadSelectedInvoiceItems();
             }
             catch
             {
                 _invoicesBindingSource.DataSource = new List<InvoiceDto>();
+                _invoiceItemsBindingSource.DataSource = new List<InvoiceItemDto>();
             }
+        }
+
+        private void LoadSelectedInvoiceItems()
+        {
+            if (customerInvoicesGrid.CurrentRow?.DataBoundItem is not InvoiceDto invoice)
+            {
+                _invoiceItemsBindingSource.DataSource = new List<InvoiceItemDto>();
+                return;
+            }
+
+            _invoiceItemsBindingSource.DataSource = invoice.InvoiceItems.ToList();
         }
 
         private async Task OpenCustomerDialogAsync(CustomerDto? customer = null)
@@ -181,6 +213,7 @@ namespace UI.Views.Customers
             deleteBtn.Enabled = !isBusy;
             customersGrid.Enabled = !isBusy;
             customerInvoicesGrid.Enabled = !isBusy;
+            invoiceItemsGrid.Enabled = !isBusy;
         }
     }
 }

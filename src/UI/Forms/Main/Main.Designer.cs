@@ -37,11 +37,18 @@
             dashboardBtn = new Button();
             inventoryBtn = new Button();
             posBtn = new Button();
-            scannerBtn = new Button();
+            scannerPanel = new Panel();
+            scannerLayout = new TableLayoutPanel();
+            scannerTitleLbl = new Label();
+            scannerQrPictureBox = new PictureBox();
+            scannerLinkLbl = new LinkLabel();
             contentPanel = new Panel();
             tableLayoutPanel1.SuspendLayout();
             sidebarPanel.SuspendLayout();
             sidebarLayout.SuspendLayout();
+            scannerPanel.SuspendLayout();
+            scannerLayout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)scannerQrPictureBox).BeginInit();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -56,7 +63,7 @@
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(1156, 743);
+            tableLayoutPanel1.Size = new Size(1410, 743);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // sidebarPanel
@@ -65,6 +72,7 @@
             sidebarPanel.Dock = DockStyle.Fill;
             sidebarPanel.Location = new Point(3, 3);
             sidebarPanel.Name = "sidebarPanel";
+            sidebarPanel.Padding = new Padding(0, 12, 0, 12);
             sidebarPanel.Size = new Size(214, 737);
             sidebarPanel.TabIndex = 0;
             // 
@@ -79,7 +87,7 @@
             sidebarLayout.Controls.Add(dashboardBtn, 0, 1);
             sidebarLayout.Controls.Add(inventoryBtn, 0, 3);
             sidebarLayout.Controls.Add(posBtn, 0, 2);
-            sidebarLayout.Controls.Add(scannerBtn, 0, 7);
+            sidebarLayout.Controls.Add(scannerPanel, 0, 7);
             sidebarLayout.Dock = DockStyle.Fill;
             sidebarLayout.Location = new Point(0, 0);
             sidebarLayout.Name = "sidebarLayout";
@@ -99,11 +107,11 @@
             // 
             customersBtn.FlatAppearance.BorderSize = 0;
             customersBtn.FlatStyle = FlatStyle.Flat;
+            customersBtn.Dock = DockStyle.Fill;
             customersBtn.ImageAlign = ContentAlignment.MiddleLeft;
-            customersBtn.Location = new Point(10, 275);
             customersBtn.Margin = new Padding(10, 5, 10, 5);
             customersBtn.Name = "customersBtn";
-            customersBtn.Size = new Size(94, 29);
+            customersBtn.Size = new Size(194, 40);
             customersBtn.TabIndex = 5;
             customersBtn.Text = "Customers";
             customersBtn.UseVisualStyleBackColor = true;
@@ -125,11 +133,11 @@
             // 
             suppliersBtn.FlatAppearance.BorderSize = 0;
             suppliersBtn.FlatStyle = FlatStyle.Flat;
+            suppliersBtn.Dock = DockStyle.Fill;
             suppliersBtn.ImageAlign = ContentAlignment.MiddleLeft;
-            suppliersBtn.Location = new Point(10, 225);
             suppliersBtn.Margin = new Padding(10, 5, 10, 5);
             suppliersBtn.Name = "suppliersBtn";
-            suppliersBtn.Size = new Size(94, 29);
+            suppliersBtn.Size = new Size(194, 40);
             suppliersBtn.TabIndex = 4;
             suppliersBtn.Text = "Suppliers";
             suppliersBtn.UseVisualStyleBackColor = true;
@@ -138,11 +146,11 @@
             // 
             dashboardBtn.FlatAppearance.BorderSize = 0;
             dashboardBtn.FlatStyle = FlatStyle.Flat;
+            dashboardBtn.Dock = DockStyle.Fill;
             dashboardBtn.ImageAlign = ContentAlignment.MiddleLeft;
-            dashboardBtn.Location = new Point(10, 75);
             dashboardBtn.Margin = new Padding(10, 5, 10, 5);
             dashboardBtn.Name = "dashboardBtn";
-            dashboardBtn.Size = new Size(94, 29);
+            dashboardBtn.Size = new Size(194, 40);
             dashboardBtn.TabIndex = 1;
             dashboardBtn.Text = "Dashboard";
             dashboardBtn.UseVisualStyleBackColor = true;
@@ -151,11 +159,11 @@
             // 
             inventoryBtn.FlatAppearance.BorderSize = 0;
             inventoryBtn.FlatStyle = FlatStyle.Flat;
+            inventoryBtn.Dock = DockStyle.Fill;
             inventoryBtn.ImageAlign = ContentAlignment.MiddleLeft;
-            inventoryBtn.Location = new Point(10, 175);
             inventoryBtn.Margin = new Padding(10, 5, 10, 5);
             inventoryBtn.Name = "inventoryBtn";
-            inventoryBtn.Size = new Size(94, 29);
+            inventoryBtn.Size = new Size(194, 40);
             inventoryBtn.TabIndex = 3;
             inventoryBtn.Text = "Inventory";
             inventoryBtn.UseVisualStyleBackColor = true;
@@ -164,41 +172,89 @@
             // 
             posBtn.FlatAppearance.BorderSize = 0;
             posBtn.FlatStyle = FlatStyle.Flat;
+            posBtn.Dock = DockStyle.Fill;
             posBtn.ImageAlign = ContentAlignment.MiddleLeft;
-            posBtn.Location = new Point(10, 125);
             posBtn.Margin = new Padding(10, 5, 10, 5);
             posBtn.Name = "posBtn";
-            posBtn.Size = new Size(94, 29);
+            posBtn.Size = new Size(194, 40);
             posBtn.TabIndex = 2;
             posBtn.Text = "POS";
             posBtn.UseVisualStyleBackColor = true;
             // 
-            // scannerBtn
+            // scannerPanel
             // 
-            scannerBtn.FlatAppearance.BorderSize = 0;
-            scannerBtn.FlatStyle = FlatStyle.Flat;
-            scannerBtn.ImageAlign = ContentAlignment.MiddleLeft;
-            scannerBtn.Location = new Point(10, 687);
-            scannerBtn.Margin = new Padding(10, 5, 10, 5);
-            scannerBtn.Name = "scannerBtn";
-            scannerBtn.Size = new Size(94, 29);
-            scannerBtn.TabIndex = 6;
-            scannerBtn.Text = "Scanner";
-            scannerBtn.UseVisualStyleBackColor = true;
+            scannerPanel.Controls.Add(scannerLayout);
+            scannerPanel.Dock = DockStyle.Fill;
+            scannerPanel.Location = new Point(3, 687);
+            scannerPanel.Name = "scannerPanel";
+            scannerPanel.Padding = new Padding(10, 0, 10, 0);
+            scannerPanel.Size = new Size(208, 47);
+            scannerPanel.TabIndex = 6;
+            // 
+            // scannerLayout
+            // 
+            scannerLayout.ColumnCount = 1;
+            scannerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            scannerLayout.Controls.Add(scannerTitleLbl, 0, 0);
+            scannerLayout.Controls.Add(scannerQrPictureBox, 0, 1);
+            scannerLayout.Controls.Add(scannerLinkLbl, 0, 2);
+            scannerLayout.Dock = DockStyle.Fill;
+            scannerLayout.Location = new Point(10, 0);
+            scannerLayout.Name = "scannerLayout";
+            scannerLayout.RowCount = 3;
+            scannerLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
+            scannerLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 110F));
+            scannerLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            scannerLayout.Size = new Size(188, 47);
+            scannerLayout.TabIndex = 0;
+            // 
+            // scannerTitleLbl
+            // 
+            scannerTitleLbl.Dock = DockStyle.Fill;
+            scannerTitleLbl.Location = new Point(8, 6);
+            scannerTitleLbl.Margin = new Padding(8, 6, 8, 2);
+            scannerTitleLbl.Name = "scannerTitleLbl";
+            scannerTitleLbl.Size = new Size(172, 22);
+            scannerTitleLbl.TabIndex = 0;
+            scannerTitleLbl.Text = "Scanner";
+            scannerTitleLbl.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // scannerQrPictureBox
+            // 
+            scannerQrPictureBox.Dock = DockStyle.Fill;
+            scannerQrPictureBox.Location = new Point(3, 25);
+            scannerQrPictureBox.Name = "scannerQrPictureBox";
+            scannerQrPictureBox.Size = new Size(182, 104);
+            scannerQrPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            scannerQrPictureBox.TabIndex = 1;
+            scannerQrPictureBox.TabStop = false;
+            // 
+            // scannerLinkLbl
+            // 
+            scannerLinkLbl.AutoEllipsis = true;
+            scannerLinkLbl.Dock = DockStyle.Fill;
+            scannerLinkLbl.Location = new Point(8, 134);
+            scannerLinkLbl.Margin = new Padding(8, 2, 8, 0);
+            scannerLinkLbl.Name = "scannerLinkLbl";
+            scannerLinkLbl.Size = new Size(172, 1);
+            scannerLinkLbl.TabIndex = 2;
+            scannerLinkLbl.TabStop = true;
+            scannerLinkLbl.Text = "https://...";
+            scannerLinkLbl.TextAlign = ContentAlignment.TopCenter;
             // 
             // contentPanel
             // 
             contentPanel.Dock = DockStyle.Fill;
             contentPanel.Location = new Point(223, 3);
             contentPanel.Name = "contentPanel";
-            contentPanel.Size = new Size(930, 737);
+            contentPanel.Size = new Size(1184, 737);
             contentPanel.TabIndex = 1;
             // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1156, 743);
+            ClientSize = new Size(1410, 743);
             Controls.Add(tableLayoutPanel1);
             Name = "Main";
             Text = "Main";
@@ -206,6 +262,9 @@
             sidebarPanel.ResumeLayout(false);
             sidebarLayout.ResumeLayout(false);
             sidebarLayout.PerformLayout();
+            scannerPanel.ResumeLayout(false);
+            scannerLayout.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)scannerQrPictureBox).EndInit();
             ResumeLayout(false);
         }
 
@@ -221,6 +280,10 @@
         private Button inventoryBtn;
         private Button posBtn;
         private TableLayoutPanel sidebarLayout;
-        private Button scannerBtn;
+        private Panel scannerPanel;
+        private TableLayoutPanel scannerLayout;
+        private Label scannerTitleLbl;
+        private PictureBox scannerQrPictureBox;
+        private LinkLabel scannerLinkLbl;
     }
 }

@@ -5,6 +5,7 @@ using BLL.DTOs.InvoiceItem;
 using BLL.Interfaces;
 using Common.Enums;
 using UI.Events;
+using UI.Theme;
 
 namespace UI.Views.POS
 {
@@ -42,6 +43,8 @@ namespace UI.Views.POS
             cartGrid.AutoGenerateColumns = false;
             cartGrid.DataSource = _cartBindingSource;
             _cartBindingSource.DataSource = _cartItems;
+
+            UiGridTheme.ApplyReadOnly(cartGrid);
 
             productColumn.DataPropertyName = nameof(CartItemRow.ProductName);
             quantityColumn.DataPropertyName = nameof(CartItemRow.Quantity);
@@ -145,7 +148,7 @@ namespace UI.Views.POS
 
         private async void OnBarcodeScanned(object? sender, string barcode)
         {
-            if (IsDisposed || string.IsNullOrWhiteSpace(barcode))
+            if (IsDisposed || string.IsNullOrWhiteSpace(barcode) || !CanHandleScannerInput())
             {
                 return;
             }
@@ -157,6 +160,15 @@ namespace UI.Views.POS
             }
 
             await AddByBarcodeAsync(barcode);
+        }
+
+        private bool CanHandleScannerInput()
+        {
+            var hostForm = FindForm();
+            return Parent is not null
+                && Visible
+                && hostForm is not null
+                && ReferenceEquals(Form.ActiveForm, hostForm);
         }
 
         private async Task AddByBarcodeAsync(string barcode)

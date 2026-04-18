@@ -1,7 +1,9 @@
 using BLL.DTOs.Batch;
+using BLL.DTOs.BatchItem;
 using BLL.DTOs.Supplier;
 using BLL.Interfaces;
 using UI.Forms.SupplierDialog;
+using UI.Theme;
 
 namespace UI.Views.Suppliers
 {
@@ -11,6 +13,7 @@ namespace UI.Views.Suppliers
         private readonly IBatchService _batchService;
         private readonly BindingSource _suppliersBindingSource = new();
         private readonly BindingSource _batchesBindingSource = new();
+        private readonly BindingSource _batchItemsBindingSource = new();
         private IReadOnlyList<SupplierDto> _suppliers = Array.Empty<SupplierDto>();
         private bool _isLoading;
 
@@ -30,12 +33,22 @@ namespace UI.Views.Suppliers
 
             supplierBatchesGrid.AutoGenerateColumns = false;
             supplierBatchesGrid.DataSource = _batchesBindingSource;
+            batchItemsGrid.AutoGenerateColumns = false;
+            batchItemsGrid.DataSource = _batchItemsBindingSource;
+
+            UiGridTheme.ApplyReadOnly(suppliersGrid);
+            UiGridTheme.ApplyReadOnly(supplierBatchesGrid);
+            UiGridTheme.ApplyReadOnly(batchItemsGrid);
 
             batchIdColumn.DataPropertyName = nameof(BatchSummaryDto.Id);
             purchaseDateColumn.DataPropertyName = nameof(BatchSummaryDto.PurchaseDate);
             itemsCountColumn.DataPropertyName = nameof(BatchSummaryDto.ItemsCount);
             totalReceivedColumn.DataPropertyName = nameof(BatchSummaryDto.TotalQuantityReceived);
             totalRemainingColumn.DataPropertyName = nameof(BatchSummaryDto.TotalQuantityRemaining);
+            itemProductColumn.DataPropertyName = nameof(BatchItemDto.ProductName);
+            itemReceivedColumn.DataPropertyName = nameof(BatchItemDto.QuantityReceived);
+            itemRemainingColumn.DataPropertyName = nameof(BatchItemDto.QuantityRemaining);
+            itemExpiryColumn.DataPropertyName = nameof(BatchItemDto.ExpirationDate);
         }
 
         private void SubscribeToEvents()
@@ -47,6 +60,7 @@ namespace UI.Views.Suppliers
                 UpdateSelectionState();
                 await LoadSelectedSupplierBatchesAsync();
             };
+            supplierBatchesGrid.SelectionChanged += async (_, _) => await LoadSelectedBatchItemsAsync();
             addBtn.Click += async (_, _) => await OpenSupplierEditorAsync();
             editBtn.Click += async (_, _) => await OpenSupplierEditorAsync(GetSelectedSupplier());
             deleteBtn.Click += async (_, _) => await DeleteSelectedSupplierAsync();
@@ -97,6 +111,7 @@ namespace UI.Views.Suppliers
             if (selectedSupplier is null)
             {
                 _batchesBindingSource.DataSource = new List<BatchSummaryDto>();
+                _batchItemsBindingSource.DataSource = new List<BatchItemDto>();
                 return;
             }
 
@@ -104,10 +119,31 @@ namespace UI.Views.Suppliers
             {
                 var batches = await _batchService.GetBatchesBySupplierAsync(selectedSupplier.Id);
                 _batchesBindingSource.DataSource = batches.ToList();
+                await LoadSelectedBatchItemsAsync();
             }
             catch
             {
                 _batchesBindingSource.DataSource = new List<BatchSummaryDto>();
+                _batchItemsBindingSource.DataSource = new List<BatchItemDto>();
+            }
+        }
+
+        private async Task LoadSelectedBatchItemsAsync()
+        {
+            if (supplierBatchesGrid.CurrentRow?.DataBoundItem is not BatchSummaryDto selectedBatch)
+            {
+                _batchItemsBindingSource.DataSource = new List<BatchItemDto>();
+                return;
+            }
+
+            try
+            {
+                var batch = await _batchService.GetBatchByIdAsync(selectedBatch.Id);
+                _batchItemsBindingSource.DataSource = batch.Items.ToList();
+            }
+            catch
+            {
+                _batchItemsBindingSource.DataSource = new List<BatchItemDto>();
             }
         }
 
@@ -171,6 +207,7 @@ namespace UI.Views.Suppliers
             addBtn.Enabled = !isBusy;
             suppliersGrid.Enabled = !isBusy;
             supplierBatchesGrid.Enabled = !isBusy;
+            batchItemsGrid.Enabled = !isBusy;
             UpdateSelectionState();
         }
 

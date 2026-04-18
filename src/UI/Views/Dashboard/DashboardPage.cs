@@ -1,6 +1,7 @@
 using BLL.DTOs.Batch;
 using BLL.DTOs.Dashboard;
 using BLL.Interfaces;
+using UI.Theme;
 
 namespace UI.Views.Dashboard
 {
@@ -16,8 +17,49 @@ namespace UI.Views.Dashboard
         {
             _dashboardService = dashboardService;
             InitializeComponent();
+            ApplyPalette();
             ConfigureGrids();
             Load += async (_, _) => await LoadOverviewAsync();
+        }
+
+        private void ApplyPalette()
+        {
+            BackColor = UiPalette.AppBackground;
+            rootLayout.BackColor = UiPalette.AppBackground;
+            summaryLayout.BackColor = UiPalette.AppBackground;
+            middleLayout.BackColor = UiPalette.AppBackground;
+            alertsLayout.BackColor = UiPalette.AppBackground;
+
+            StyleSummary(customersSummary, customersTitleLbl, customersValueLbl);
+            StyleSummary(suppliersSummary, suppliersTitleLbl, suppliersValueLbl);
+            StyleSummary(productsSummary, productsTitleLbl, productsValueLbl);
+            StyleSummary(batchesSummary, batchesTitleLbl, batchesValueLbl);
+
+            StyleSection(recentInvoicesLayout, recentInvoicesTitleLbl);
+            StyleSection(recentBatchesLayout, recentBatchesTitleLbl);
+            StyleSection(lowStockLayout, lowStockTitleLbl);
+            StyleSection(expiringLayout, expiringTitleLbl);
+        }
+
+        private static void StyleSummary(TableLayoutPanel summary, Label titleLabel, Label valueLabel)
+        {
+            summary.BackColor = UiPalette.AppBackground;
+
+            titleLabel.Font = UiPalette.BodyFont(9f);
+            titleLabel.ForeColor = UiPalette.TextMuted;
+
+            valueLabel.Font = UiPalette.BodyFont(16f, FontStyle.Bold);
+            valueLabel.ForeColor = UiPalette.TextPrimary;
+        }
+
+        private static void StyleSection(TableLayoutPanel sectionLayout, Label titleLabel)
+        {
+            sectionLayout.BackColor = UiPalette.Surface;
+            sectionLayout.Padding = new Padding(8);
+            sectionLayout.Margin = new Padding(6);
+
+            titleLabel.Font = UiPalette.BodyFont(10.5f);
+            titleLabel.ForeColor = UiPalette.TextPrimary;
         }
 
         private void ConfigureGrids()
@@ -32,7 +74,7 @@ namespace UI.Views.Dashboard
             expiringGrid.DataSource = _expiringBindingSource;
 
             invoiceIdColumn.DataPropertyName = nameof(DashboardInvoiceDto.Id);
-            invoiceCustomerIdColumn.DataPropertyName = nameof(DashboardInvoiceDto.CustomerId);
+            invoiceCustomerIdColumn.DataPropertyName = nameof(DashboardInvoiceDto.CustomerName);
             invoiceDateColumn.DataPropertyName = nameof(DashboardInvoiceDto.InvoiceDate);
             invoiceTotalAmountColumn.DataPropertyName = nameof(DashboardInvoiceDto.TotalAmount);
             invoiceStatusColumn.DataPropertyName = nameof(DashboardInvoiceDto.Status);
@@ -51,9 +93,71 @@ namespace UI.Views.Dashboard
 
             invoiceDateColumn.DefaultCellStyle.Format = "dd-MMM-yyyy";
             invoiceTotalAmountColumn.DefaultCellStyle.Format = "0.00 'EGP'";
-            invoiceTotalAmountColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             lowStockExpiryColumn.DefaultCellStyle.Format = "dd-MMM-yyyy";
             expiringDateColumn.DefaultCellStyle.Format = "dd-MMM-yyyy";
+
+            ConfigureGridTheme(recentInvoicesGrid);
+            ConfigureGridTheme(recentBatchesGrid);
+            ConfigureGridTheme(lowStockGrid);
+            ConfigureGridTheme(expiringGrid);
+
+            lowStockGrid.DataBindingComplete += (_, _) => ApplyLowStockHighlighting();
+            expiringGrid.DataBindingComplete += (_, _) => ApplyExpiringHighlighting();
+        }
+
+        private static void ConfigureGridTheme(DataGridView grid)
+        {
+            grid.BackgroundColor = UiPalette.Surface;
+            grid.BorderStyle = BorderStyle.None;
+            grid.EnableHeadersVisualStyles = false;
+            grid.GridColor = UiPalette.Border;
+            grid.DefaultCellStyle.BackColor = UiPalette.Surface;
+            grid.DefaultCellStyle.ForeColor = UiPalette.TextPrimary;
+            grid.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(232, 240, 247);
+            grid.DefaultCellStyle.SelectionForeColor = UiPalette.TextPrimary;
+            grid.AlternatingRowsDefaultCellStyle.BackColor = UiPalette.RowAlternate;
+            grid.ColumnHeadersDefaultCellStyle.BackColor = UiPalette.AppBackground;
+            grid.ColumnHeadersDefaultCellStyle.ForeColor = UiPalette.TextPrimary;
+            grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = UiPalette.AppBackground;
+            grid.ColumnHeadersDefaultCellStyle.SelectionForeColor = UiPalette.TextPrimary;
+            grid.ColumnHeadersDefaultCellStyle.Font = UiPalette.BodyFont(9.5f);
+            grid.DefaultCellStyle.Font = UiPalette.BodyFont(9f);
+            grid.MultiSelect = false;
+        }
+
+        private void ApplyLowStockHighlighting()
+        {
+            foreach (DataGridViewRow row in lowStockGrid.Rows)
+            {
+                if (row.DataBoundItem is not DashboardAlertItemDto item)
+                {
+                    continue;
+                }
+
+                row.DefaultCellStyle.BackColor = item.QuantityRemaining <= 3
+                    ? Color.FromArgb(254, 226, 226)
+                    : Color.FromArgb(255, 247, 237);
+            }
+        }
+
+        private void ApplyExpiringHighlighting()
+        {
+            var today = DateTime.Today;
+
+            foreach (DataGridViewRow row in expiringGrid.Rows)
+            {
+                if (row.DataBoundItem is not DashboardAlertItemDto item)
+                {
+                    continue;
+                }
+
+                var daysUntilExpiry = (item.ExpirationDate.Date - today).TotalDays;
+                row.DefaultCellStyle.BackColor = daysUntilExpiry <= 7
+                    ? Color.FromArgb(254, 242, 242)
+                    : Color.FromArgb(255, 251, 235);
+            }
         }
 
         private async Task LoadOverviewAsync()
@@ -71,6 +175,8 @@ namespace UI.Views.Dashboard
                 _recentBatchesBindingSource.DataSource = overview.RecentBatches;
                 _lowStockBindingSource.DataSource = overview.LowStockItems;
                 _expiringBindingSource.DataSource = overview.ExpiringItems;
+
+                ClearGridSelections();
             }
             catch (Exception ex)
             {
@@ -80,6 +186,14 @@ namespace UI.Views.Dashboard
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+        }
+
+        private void ClearGridSelections()
+        {
+            recentInvoicesGrid.ClearSelection();
+            recentBatchesGrid.ClearSelection();
+            lowStockGrid.ClearSelection();
+            expiringGrid.ClearSelection();
         }
     }
 }

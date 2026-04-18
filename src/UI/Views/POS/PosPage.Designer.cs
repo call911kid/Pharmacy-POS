@@ -241,7 +241,6 @@ namespace UI.Views.POS
             customerPhoneTextBox.Location = new Point(3, 31);
             customerPhoneTextBox.MaxLength = 11;
             customerPhoneTextBox.Name = "customerPhoneTextBox";
-            customerPhoneTextBox.PlaceholderText = "Enter 11-digit phone";
             customerPhoneTextBox.Size = new Size(296, 27);
             customerPhoneTextBox.TabIndex = 1;
             // 
@@ -261,7 +260,6 @@ namespace UI.Views.POS
             customerNameTextBox.Enabled = false;
             customerNameTextBox.Location = new Point(3, 101);
             customerNameTextBox.Name = "customerNameTextBox";
-            customerNameTextBox.PlaceholderText = "Name will unlock for new customer";
             customerNameTextBox.Size = new Size(296, 27);
             customerNameTextBox.TabIndex = 3;
             // 

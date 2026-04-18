@@ -121,6 +121,7 @@ namespace BLL.Services
                     Id = ii.Id,
                     InvoiceId = ii.InvoiceId,
                     ProductId = ii.BatchItem?.ProductId ?? 0,
+                    ProductName = ii.BatchItem?.Product?.Name ?? $"Product #{ii.BatchItem?.ProductId ?? 0}",
                     Quantity = ii.Quantity,
                     UnitPrice = ii.OriginalPrice
                 }).ToList() ?? new List<InvoiceItemDto>()

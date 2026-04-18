@@ -19,17 +19,17 @@ namespace UI.Views.Dashboard
         private void InitializeComponent()
         {
             rootLayout = new TableLayoutPanel();
-            cardsLayout = new TableLayoutPanel();
-            customersCard = new Panel();
+            summaryLayout = new TableLayoutPanel();
+            customersSummary = new TableLayoutPanel();
             customersValueLbl = new Label();
             customersTitleLbl = new Label();
-            suppliersCard = new Panel();
+            suppliersSummary = new TableLayoutPanel();
             suppliersValueLbl = new Label();
             suppliersTitleLbl = new Label();
-            productsCard = new Panel();
+            productsSummary = new TableLayoutPanel();
             productsValueLbl = new Label();
             productsTitleLbl = new Label();
-            batchesCard = new Panel();
+            batchesSummary = new TableLayoutPanel();
             batchesValueLbl = new Label();
             batchesTitleLbl = new Label();
             middleLayout = new TableLayoutPanel();
@@ -63,11 +63,11 @@ namespace UI.Views.Dashboard
             expiringQtyColumn = new DataGridViewTextBoxColumn();
             expiringDateColumn = new DataGridViewTextBoxColumn();
             rootLayout.SuspendLayout();
-            cardsLayout.SuspendLayout();
-            customersCard.SuspendLayout();
-            suppliersCard.SuspendLayout();
-            productsCard.SuspendLayout();
-            batchesCard.SuspendLayout();
+            summaryLayout.SuspendLayout();
+            customersSummary.SuspendLayout();
+            suppliersSummary.SuspendLayout();
+            productsSummary.SuspendLayout();
+            batchesSummary.SuspendLayout();
             middleLayout.SuspendLayout();
             recentInvoicesLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)recentInvoicesGrid).BeginInit();
@@ -84,7 +84,7 @@ namespace UI.Views.Dashboard
             // 
             rootLayout.ColumnCount = 1;
             rootLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            rootLayout.Controls.Add(cardsLayout, 0, 0);
+            rootLayout.Controls.Add(summaryLayout, 0, 0);
             rootLayout.Controls.Add(middleLayout, 0, 1);
             rootLayout.Controls.Add(alertsLayout, 0, 2);
             rootLayout.Dock = DockStyle.Fill;
@@ -92,152 +92,168 @@ namespace UI.Views.Dashboard
             rootLayout.Name = "rootLayout";
             rootLayout.Padding = new Padding(12);
             rootLayout.RowCount = 3;
-            rootLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 120F));
+            rootLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 72F));
             rootLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            rootLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 180F));
+            rootLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 220F));
             rootLayout.Size = new Size(980, 620);
             rootLayout.TabIndex = 0;
             // 
-            // cardsLayout
+            // summaryLayout
             // 
-            cardsLayout.ColumnCount = 4;
-            cardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            cardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            cardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            cardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            cardsLayout.Controls.Add(customersCard, 0, 0);
-            cardsLayout.Controls.Add(suppliersCard, 1, 0);
-            cardsLayout.Controls.Add(productsCard, 2, 0);
-            cardsLayout.Controls.Add(batchesCard, 3, 0);
-            cardsLayout.Dock = DockStyle.Fill;
-            cardsLayout.Location = new Point(15, 15);
-            cardsLayout.Name = "cardsLayout";
-            cardsLayout.RowCount = 1;
-            cardsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            cardsLayout.Size = new Size(950, 114);
-            cardsLayout.TabIndex = 0;
+            summaryLayout.ColumnCount = 4;
+            summaryLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            summaryLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            summaryLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            summaryLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            summaryLayout.Controls.Add(customersSummary, 0, 0);
+            summaryLayout.Controls.Add(suppliersSummary, 1, 0);
+            summaryLayout.Controls.Add(productsSummary, 2, 0);
+            summaryLayout.Controls.Add(batchesSummary, 3, 0);
+            summaryLayout.Dock = DockStyle.Fill;
+            summaryLayout.Location = new Point(15, 15);
+            summaryLayout.Name = "summaryLayout";
+            summaryLayout.RowCount = 1;
+            summaryLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            summaryLayout.Size = new Size(950, 66);
+            summaryLayout.TabIndex = 0;
             // 
-            // customersCard
+            // customersSummary
             // 
-            customersCard.Controls.Add(customersValueLbl);
-            customersCard.Controls.Add(customersTitleLbl);
-            customersCard.Dock = DockStyle.Fill;
-            customersCard.Location = new Point(6, 6);
-            customersCard.Margin = new Padding(6);
-            customersCard.Name = "customersCard";
-            customersCard.Padding = new Padding(12);
-            customersCard.Size = new Size(225, 102);
-            customersCard.TabIndex = 0;
+            customersSummary.ColumnCount = 1;
+            customersSummary.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            customersSummary.Controls.Add(customersTitleLbl, 0, 0);
+            customersSummary.Controls.Add(customersValueLbl, 0, 1);
+            customersSummary.Dock = DockStyle.Fill;
+            customersSummary.Location = new Point(6, 6);
+            customersSummary.Margin = new Padding(6);
+            customersSummary.Name = "customersSummary";
+            customersSummary.RowCount = 2;
+            customersSummary.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            customersSummary.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            customersSummary.Size = new Size(225, 54);
+            customersSummary.TabIndex = 0;
             // 
             // customersValueLbl
             // 
             customersValueLbl.Dock = DockStyle.Fill;
-            customersValueLbl.Location = new Point(12, 32);
+            customersValueLbl.Location = new Point(3, 20);
             customersValueLbl.Name = "customersValueLbl";
-            customersValueLbl.Size = new Size(201, 58);
+            customersValueLbl.Size = new Size(219, 34);
             customersValueLbl.TabIndex = 1;
             customersValueLbl.Text = "0";
             customersValueLbl.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // customersTitleLbl
             // 
-            customersTitleLbl.Dock = DockStyle.Top;
-            customersTitleLbl.Location = new Point(12, 12);
+            customersTitleLbl.Dock = DockStyle.Fill;
+            customersTitleLbl.Location = new Point(3, 0);
             customersTitleLbl.Name = "customersTitleLbl";
-            customersTitleLbl.Size = new Size(201, 20);
+            customersTitleLbl.Size = new Size(219, 20);
             customersTitleLbl.TabIndex = 0;
             customersTitleLbl.Text = "Customers";
             // 
-            // suppliersCard
+            // suppliersSummary
             // 
-            suppliersCard.Controls.Add(suppliersValueLbl);
-            suppliersCard.Controls.Add(suppliersTitleLbl);
-            suppliersCard.Dock = DockStyle.Fill;
-            suppliersCard.Location = new Point(243, 6);
-            suppliersCard.Margin = new Padding(6);
-            suppliersCard.Name = "suppliersCard";
-            suppliersCard.Padding = new Padding(12);
-            suppliersCard.Size = new Size(225, 102);
-            suppliersCard.TabIndex = 1;
+            suppliersSummary.ColumnCount = 1;
+            suppliersSummary.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            suppliersSummary.Controls.Add(suppliersTitleLbl, 0, 0);
+            suppliersSummary.Controls.Add(suppliersValueLbl, 0, 1);
+            suppliersSummary.Dock = DockStyle.Fill;
+            suppliersSummary.Location = new Point(243, 6);
+            suppliersSummary.Margin = new Padding(6);
+            suppliersSummary.Name = "suppliersSummary";
+            suppliersSummary.RowCount = 2;
+            suppliersSummary.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            suppliersSummary.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            suppliersSummary.Size = new Size(225, 54);
+            suppliersSummary.TabIndex = 1;
             // 
             // suppliersValueLbl
             // 
             suppliersValueLbl.Dock = DockStyle.Fill;
-            suppliersValueLbl.Location = new Point(12, 32);
+            suppliersValueLbl.Location = new Point(3, 20);
             suppliersValueLbl.Name = "suppliersValueLbl";
-            suppliersValueLbl.Size = new Size(201, 58);
+            suppliersValueLbl.Size = new Size(219, 34);
             suppliersValueLbl.TabIndex = 1;
             suppliersValueLbl.Text = "0";
             suppliersValueLbl.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // suppliersTitleLbl
             // 
-            suppliersTitleLbl.Dock = DockStyle.Top;
-            suppliersTitleLbl.Location = new Point(12, 12);
+            suppliersTitleLbl.Dock = DockStyle.Fill;
+            suppliersTitleLbl.Location = new Point(3, 0);
             suppliersTitleLbl.Name = "suppliersTitleLbl";
-            suppliersTitleLbl.Size = new Size(201, 20);
+            suppliersTitleLbl.Size = new Size(219, 20);
             suppliersTitleLbl.TabIndex = 0;
             suppliersTitleLbl.Text = "Suppliers";
             // 
-            // productsCard
+            // productsSummary
             // 
-            productsCard.Controls.Add(productsValueLbl);
-            productsCard.Controls.Add(productsTitleLbl);
-            productsCard.Dock = DockStyle.Fill;
-            productsCard.Location = new Point(480, 6);
-            productsCard.Margin = new Padding(6);
-            productsCard.Name = "productsCard";
-            productsCard.Padding = new Padding(12);
-            productsCard.Size = new Size(225, 102);
-            productsCard.TabIndex = 2;
+            productsSummary.ColumnCount = 1;
+            productsSummary.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            productsSummary.Controls.Add(productsTitleLbl, 0, 0);
+            productsSummary.Controls.Add(productsValueLbl, 0, 1);
+            productsSummary.Dock = DockStyle.Fill;
+            productsSummary.Location = new Point(480, 6);
+            productsSummary.Margin = new Padding(6);
+            productsSummary.Name = "productsSummary";
+            productsSummary.RowCount = 2;
+            productsSummary.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            productsSummary.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            productsSummary.Size = new Size(225, 54);
+            productsSummary.TabIndex = 2;
             // 
             // productsValueLbl
             // 
             productsValueLbl.Dock = DockStyle.Fill;
-            productsValueLbl.Location = new Point(12, 32);
+            productsValueLbl.Location = new Point(3, 20);
             productsValueLbl.Name = "productsValueLbl";
-            productsValueLbl.Size = new Size(201, 58);
+            productsValueLbl.Size = new Size(219, 34);
             productsValueLbl.TabIndex = 1;
             productsValueLbl.Text = "0";
             productsValueLbl.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // productsTitleLbl
             // 
-            productsTitleLbl.Dock = DockStyle.Top;
-            productsTitleLbl.Location = new Point(12, 12);
+            productsTitleLbl.Dock = DockStyle.Fill;
+            productsTitleLbl.Location = new Point(3, 0);
             productsTitleLbl.Name = "productsTitleLbl";
-            productsTitleLbl.Size = new Size(201, 20);
+            productsTitleLbl.Size = new Size(219, 20);
             productsTitleLbl.TabIndex = 0;
             productsTitleLbl.Text = "Products";
             // 
-            // batchesCard
+            // batchesSummary
             // 
-            batchesCard.Controls.Add(batchesValueLbl);
-            batchesCard.Controls.Add(batchesTitleLbl);
-            batchesCard.Dock = DockStyle.Fill;
-            batchesCard.Location = new Point(717, 6);
-            batchesCard.Margin = new Padding(6);
-            batchesCard.Name = "batchesCard";
-            batchesCard.Padding = new Padding(12);
-            batchesCard.Size = new Size(227, 102);
-            batchesCard.TabIndex = 3;
+            batchesSummary.ColumnCount = 1;
+            batchesSummary.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            batchesSummary.Controls.Add(batchesTitleLbl, 0, 0);
+            batchesSummary.Controls.Add(batchesValueLbl, 0, 1);
+            batchesSummary.Dock = DockStyle.Fill;
+            batchesSummary.Location = new Point(717, 6);
+            batchesSummary.Margin = new Padding(6);
+            batchesSummary.Name = "batchesSummary";
+            batchesSummary.RowCount = 2;
+            batchesSummary.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            batchesSummary.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            batchesSummary.Size = new Size(227, 54);
+            batchesSummary.TabIndex = 3;
             // 
             // batchesValueLbl
             // 
             batchesValueLbl.Dock = DockStyle.Fill;
-            batchesValueLbl.Location = new Point(12, 32);
+            batchesValueLbl.Location = new Point(3, 20);
             batchesValueLbl.Name = "batchesValueLbl";
-            batchesValueLbl.Size = new Size(203, 58);
+            batchesValueLbl.Size = new Size(221, 34);
             batchesValueLbl.TabIndex = 1;
             batchesValueLbl.Text = "0";
             batchesValueLbl.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // batchesTitleLbl
             // 
-            batchesTitleLbl.Dock = DockStyle.Top;
-            batchesTitleLbl.Location = new Point(12, 12);
+            batchesTitleLbl.Dock = DockStyle.Fill;
+            batchesTitleLbl.Location = new Point(3, 0);
             batchesTitleLbl.Name = "batchesTitleLbl";
-            batchesTitleLbl.Size = new Size(203, 20);
+            batchesTitleLbl.Size = new Size(221, 20);
             batchesTitleLbl.TabIndex = 0;
             batchesTitleLbl.Text = "Batches";
             // 
@@ -249,11 +265,11 @@ namespace UI.Views.Dashboard
             middleLayout.Controls.Add(recentInvoicesLayout, 0, 0);
             middleLayout.Controls.Add(recentBatchesLayout, 1, 0);
             middleLayout.Dock = DockStyle.Fill;
-            middleLayout.Location = new Point(15, 135);
+            middleLayout.Location = new Point(15, 87);
             middleLayout.Name = "middleLayout";
             middleLayout.RowCount = 1;
             middleLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            middleLayout.Size = new Size(950, 290);
+            middleLayout.Size = new Size(950, 298);
             middleLayout.TabIndex = 1;
             // 
             // recentInvoicesLayout
@@ -268,7 +284,7 @@ namespace UI.Views.Dashboard
             recentInvoicesLayout.RowCount = 2;
             recentInvoicesLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34F));
             recentInvoicesLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            recentInvoicesLayout.Size = new Size(469, 384);
+            recentInvoicesLayout.Size = new Size(469, 332);
             recentInvoicesLayout.TabIndex = 0;
             // 
             // recentInvoicesTitleLbl
@@ -349,7 +365,7 @@ namespace UI.Views.Dashboard
             recentBatchesLayout.RowCount = 2;
             recentBatchesLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34F));
             recentBatchesLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            recentBatchesLayout.Size = new Size(469, 384);
+            recentBatchesLayout.Size = new Size(469, 332);
             recentBatchesLayout.TabIndex = 1;
             // 
             // recentBatchesTitleLbl
@@ -430,7 +446,7 @@ namespace UI.Views.Dashboard
             alertsLayout.Name = "alertsLayout";
             alertsLayout.RowCount = 1;
             alertsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            alertsLayout.Size = new Size(950, 174);
+            alertsLayout.Size = new Size(950, 214);
             alertsLayout.TabIndex = 2;
             // 
             // lowStockLayout
@@ -445,7 +461,7 @@ namespace UI.Views.Dashboard
             lowStockLayout.RowCount = 2;
             lowStockLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
             lowStockLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            lowStockLayout.Size = new Size(469, 168);
+            lowStockLayout.Size = new Size(469, 208);
             lowStockLayout.TabIndex = 0;
             // 
             // lowStockTitleLbl
@@ -471,7 +487,7 @@ namespace UI.Views.Dashboard
             lowStockGrid.RowHeadersVisible = false;
             lowStockGrid.RowHeadersWidth = 51;
             lowStockGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            lowStockGrid.Size = new Size(463, 132);
+            lowStockGrid.Size = new Size(463, 172);
             lowStockGrid.TabIndex = 1;
             // 
             // lowStockProductColumn
@@ -510,7 +526,7 @@ namespace UI.Views.Dashboard
             expiringLayout.RowCount = 2;
             expiringLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
             expiringLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            expiringLayout.Size = new Size(469, 168);
+            expiringLayout.Size = new Size(469, 208);
             expiringLayout.TabIndex = 1;
             // 
             // expiringTitleLbl
@@ -536,7 +552,7 @@ namespace UI.Views.Dashboard
             expiringGrid.RowHeadersVisible = false;
             expiringGrid.RowHeadersWidth = 51;
             expiringGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            expiringGrid.Size = new Size(463, 132);
+            expiringGrid.Size = new Size(463, 172);
             expiringGrid.TabIndex = 1;
             // 
             // expiringProductColumn
@@ -571,11 +587,11 @@ namespace UI.Views.Dashboard
             Name = "DashboardPage";
             Size = new Size(980, 620);
             rootLayout.ResumeLayout(false);
-            cardsLayout.ResumeLayout(false);
-            customersCard.ResumeLayout(false);
-            suppliersCard.ResumeLayout(false);
-            productsCard.ResumeLayout(false);
-            batchesCard.ResumeLayout(false);
+            summaryLayout.ResumeLayout(false);
+            customersSummary.ResumeLayout(false);
+            suppliersSummary.ResumeLayout(false);
+            productsSummary.ResumeLayout(false);
+            batchesSummary.ResumeLayout(false);
             middleLayout.ResumeLayout(false);
             recentInvoicesLayout.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)recentInvoicesGrid).EndInit();
@@ -592,17 +608,17 @@ namespace UI.Views.Dashboard
         #endregion
 
         private TableLayoutPanel rootLayout;
-        private TableLayoutPanel cardsLayout;
-        private Panel customersCard;
+        private TableLayoutPanel summaryLayout;
+        private TableLayoutPanel customersSummary;
         private Label customersValueLbl;
         private Label customersTitleLbl;
-        private Panel suppliersCard;
+        private TableLayoutPanel suppliersSummary;
         private Label suppliersValueLbl;
         private Label suppliersTitleLbl;
-        private Panel productsCard;
+        private TableLayoutPanel productsSummary;
         private Label productsValueLbl;
         private Label productsTitleLbl;
-        private Panel batchesCard;
+        private TableLayoutPanel batchesSummary;
         private Label batchesValueLbl;
         private Label batchesTitleLbl;
         private TableLayoutPanel middleLayout;

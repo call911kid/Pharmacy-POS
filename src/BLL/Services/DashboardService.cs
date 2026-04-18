@@ -33,6 +33,11 @@ namespace BLL.Services
             var batches = (await _batchService.GetBatchSummariesAsync(1, int.MaxValue)).ToList();
             var lowStockItems = (await _unitOfWork.BatchItems.GetLowStockItemsAsync(lowStockThreshold, alertsCount)).ToList();
             var expiringItems = (await _unitOfWork.BatchItems.GetExpiringItemsAsync(DateTime.Now.AddDays(30), alertsCount)).ToList();
+            var customerNames = customers.ToDictionary(
+                customer => customer.Id,
+                customer => string.IsNullOrWhiteSpace(customer.Name)
+                    ? $"Customer #{customer.Id}"
+                    : customer.Name);
 
             return new DashboardOverviewDto
             {
@@ -51,6 +56,9 @@ namespace BLL.Services
                     {
                         Id = invoice.Id,
                         CustomerId = invoice.CustomerId,
+                        CustomerName = customerNames.TryGetValue(invoice.CustomerId, out var customerName)
+                            ? customerName
+                            : $"Customer #{invoice.CustomerId}",
                         InvoiceDate = invoice.InvoiceDate,
                         TotalAmount = invoice.TotalAmount,
                         Status = invoice.Status.ToString()
