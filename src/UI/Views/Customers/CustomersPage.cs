@@ -35,6 +35,9 @@ namespace UI.Views.Customers
             InvoiceDate.DataPropertyName = nameof(InvoiceDto.InvoiceDate);
             TotalAmount.DataPropertyName = nameof(InvoiceDto.TotalAmount);
             Status.DataPropertyName = nameof(InvoiceDto.Status);
+
+            TotalAmount.DefaultCellStyle.Format = "0.00 'EGP'";
+            TotalAmount.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
         }
 
         private void SubscribeToEvents()

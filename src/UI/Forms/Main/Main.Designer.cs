@@ -37,6 +37,7 @@
             dashboardBtn = new Button();
             inventoryBtn = new Button();
             posBtn = new Button();
+            scannerBtn = new Button();
             contentPanel = new Panel();
             tableLayoutPanel1.SuspendLayout();
             sidebarPanel.SuspendLayout();
@@ -78,16 +79,18 @@
             sidebarLayout.Controls.Add(dashboardBtn, 0, 1);
             sidebarLayout.Controls.Add(inventoryBtn, 0, 3);
             sidebarLayout.Controls.Add(posBtn, 0, 2);
+            sidebarLayout.Controls.Add(scannerBtn, 0, 7);
             sidebarLayout.Dock = DockStyle.Fill;
             sidebarLayout.Location = new Point(0, 0);
             sidebarLayout.Name = "sidebarLayout";
-            sidebarLayout.RowCount = 7;
+            sidebarLayout.RowCount = 8;
             sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F));
             sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             sidebarLayout.Size = new Size(214, 737);
             sidebarLayout.TabIndex = 0;
@@ -170,6 +173,19 @@
             posBtn.Text = "POS";
             posBtn.UseVisualStyleBackColor = true;
             // 
+            // scannerBtn
+            // 
+            scannerBtn.FlatAppearance.BorderSize = 0;
+            scannerBtn.FlatStyle = FlatStyle.Flat;
+            scannerBtn.ImageAlign = ContentAlignment.MiddleLeft;
+            scannerBtn.Location = new Point(10, 687);
+            scannerBtn.Margin = new Padding(10, 5, 10, 5);
+            scannerBtn.Name = "scannerBtn";
+            scannerBtn.Size = new Size(94, 29);
+            scannerBtn.TabIndex = 6;
+            scannerBtn.Text = "Scanner";
+            scannerBtn.UseVisualStyleBackColor = true;
+            // 
             // contentPanel
             // 
             contentPanel.Dock = DockStyle.Fill;
@@ -205,5 +221,6 @@
         private Button inventoryBtn;
         private Button posBtn;
         private TableLayoutPanel sidebarLayout;
+        private Button scannerBtn;
     }
 }

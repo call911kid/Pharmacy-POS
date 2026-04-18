@@ -13,8 +13,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UI.Exceptions;
 using UI.Events;
+using UI.Forms;
+using UI.Forms.BatchDialog;
 using UI.Forms.Main;
+using UI.Forms.SupplierDialog;
 using UI.Views.Customers;
+using UI.Views.Inventory;
 using UI.Views.Suppliers;
 
 namespace UI
@@ -56,7 +60,12 @@ namespace UI
                 .AddDALRepositories(connectionString)
                 .AddBLLServices()
                 .AddSingleton<UI.Events.ScannerEventBus>()
+                .AddTransient<ProductEditorForm>()
+                .AddTransient<SupplierDialog>()
+                .AddTransient<BatchDialog>()
+                .AddTransient<ScannerConnectionForm>()
                 .AddTransient<CustomersPage>()
+                .AddTransient<InventoryPage>()
                 .AddTransient<SuppliersPage>()
                 .AddTransient<Main>();
 
