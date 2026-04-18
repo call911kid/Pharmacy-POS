@@ -22,6 +22,9 @@ namespace BLL.Services
 
         public async Task AddSupplierAsync(CreateSupplierDto Supplier)
         {
+            if(Supplier.Phone.Length!=11)
+                throw new InvalidPhoneNumberException("Phone number must be 11 digits.");
+
             if (!string.IsNullOrWhiteSpace(Supplier.Phone))
             {
                 var supplier = await _unitOfWork.Suppliers.FirstOrDefaultAsync(s=> s.Phone == Supplier.Phone);

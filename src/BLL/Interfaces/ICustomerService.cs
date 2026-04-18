@@ -14,7 +14,7 @@ namespace BLL.Interfaces
 
         Task<CustomerValidationResultDto> ValidateForSaleAsync(int customerId);
 
-        Task<CustomerDto?> CreateCustomerAsync(CreateCustomerByPhoneDto dto);
+        Task<CustomerDto> CreateCustomerAsync(CreateCustomerByPhoneDto dto);
 
         Task<CustomerDto?> GetCustomerByPhoneAsync(string phone);
 
