@@ -13,6 +13,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UI.Exceptions;
 using UI.Events;
+using UI.Forms.Main;
+using UI.Views.Customers;
+using UI.Interfaces;
 
 namespace UI
 {
@@ -53,7 +56,8 @@ namespace UI
                 .AddDALRepositories(connectionString)
                 .AddBLLServices()
                 .AddSingleton<UI.Events.ScannerEventBus>()
-                .AddTransient<MainForm>();
+                .AddTransient<ICustomersPage, CustomersPage>()
+                .AddTransient<Main>();
 
             var app = builder.Build();
             app.UseStaticFiles();
@@ -88,8 +92,7 @@ namespace UI
 
 
             using var scope = app.Services.CreateScope();
-            var mainForm = scope.ServiceProvider.GetRequiredService<MainForm>();
-
+            var mainForm = scope.ServiceProvider.GetRequiredService<Main>();
             Application.Run(mainForm);
 
 
