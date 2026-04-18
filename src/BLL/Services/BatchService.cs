@@ -52,6 +52,7 @@ namespace BLL.Services
                     Id = item.Id,
                     BatchId = item.BatchId,
                     ProductId = item.ProductId,
+                    ProductName = item.Product?.Name,
                     QuantityReceived = item.QuantityReceived,
                     QuantityRemaining = item.QuantityRemaining,
                     ExpirationDate = item.ExpirationDate,
