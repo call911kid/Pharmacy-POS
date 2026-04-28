@@ -13,6 +13,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UI.Exceptions;
 using UI.Events;
+using UI.Forms;
+using UI.Forms.BatchDialog;
+using UI.Forms.Main;
+using UI.Forms.InvoicePreviewForm;
+using UI.Forms.ProductDialog;
+using UI.Forms.SupplierDialog;
+using UI.Printing;
+using UI.Views.Customers;
+using UI.Views.Dashboard;
+using UI.Views.Inventory;
+using UI.Views.POS;
+using UI.Views.Suppliers;
 
 namespace UI
 {
@@ -52,8 +64,19 @@ namespace UI
             builder.Services
                 .AddDALRepositories(connectionString)
                 .AddBLLServices()
-                .AddSingleton<UI.Events.ScannerEventBus>()
-                .AddTransient<MainForm>();
+                .AddSingleton<ScannerEventBus>()
+                .AddTransient<ProductDialog>()
+                .AddTransient<SupplierDialog>()
+                .AddTransient<IInvoicePdfGenerator, InvoicePdfGenerator>()
+                .AddTransient<IInvoicePreviewService, InvoicePreviewService>()
+                .AddTransient<BatchDialog>()
+                .AddTransient<InvoicePreviewForm>()
+                .AddTransient<DashboardPage>()
+                .AddTransient<CustomersPage>()
+                .AddTransient<InventoryPage>()
+                .AddTransient<PosPage>()
+                .AddTransient<SuppliersPage>()
+                .AddTransient<Main>();
 
             var app = builder.Build();
             app.UseStaticFiles();
@@ -88,8 +111,7 @@ namespace UI
 
 
             using var scope = app.Services.CreateScope();
-            var mainForm = scope.ServiceProvider.GetRequiredService<MainForm>();
-
+            var mainForm = scope.ServiceProvider.GetRequiredService<Main>();
             Application.Run(mainForm);
 
 

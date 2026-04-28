@@ -1,5 +1,6 @@
 ﻿using BLL.DTOs;
 using BLL.DTOs.Customer;
+using BLL.Exceptions;
 using BLL.Interfaces;
 using DAL.Interfaces;
 using DAL.Models;
@@ -28,11 +29,13 @@ namespace BLL.Services
         }
 
 
-        public async Task<CustomerDto?> CreateCustomerAsync(CreateCustomerByPhoneDto dto)
+        public async Task<CustomerDto> CreateCustomerAsync(CreateCustomerByPhoneDto dto)
         {
+            if(dto.Phone.Length!=11)
+                throw new InvalidPhoneNumberException("Phone number must be 11 digits.");
             var existing = await _unitOfWork.Customers.FirstOrDefaultAsync(c => c.Phone == dto.Phone);
             if (existing != null)
-                return MapToDto(existing);
+                throw new DuplicateException($"A customer with phone number {dto.Phone} already exists.");
 
             var customer = new Customer
             {
@@ -40,15 +43,28 @@ namespace BLL.Services
                 Phone = dto.Phone ?? string.Empty
             };
 
+           
+            await _unitOfWork.Customers.AddAsync(customer);
+            await _unitOfWork.SaveChangesAsync();
+
+            return MapToDto(await _unitOfWork.Customers.FirstOrDefaultAsync(c=>c.Phone==dto.Phone));
+
+        }
+
+        public async Task<IReadOnlyList<CustomerDto>> GetAllCustomersAsync()
+        {
             try
             {
-                await _unitOfWork.Customers.AddAsync(customer);
-                await _unitOfWork.SaveChangesAsync();
-                return MapToDto(customer);
+                var customers = await _unitOfWork.Customers.GetAllAsync(1, int.MaxValue);
+                return customers
+                    .Select(MapToDto)
+                    .OfType<CustomerDto>()
+                    .OrderBy(c => c.Name)
+                    .ToList();
             }
             catch
             {
-                return null;
+                return new List<CustomerDto>();
             }
         }
 

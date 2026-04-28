@@ -11,9 +11,12 @@ namespace BLL.DTOs.Invoice
     {
         public int Id { get; set; }
         public int CustomerId { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+        public string CustomerPhone { get; set; } = string.Empty;
+        public string Barcode { get; set; } = string.Empty;
         public DateTime InvoiceDate { get; set; }
         public decimal TotalAmount { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public List<InvoiceItemDto> InvoiceItems { get; set; }
         public InvoiceDto()
         {

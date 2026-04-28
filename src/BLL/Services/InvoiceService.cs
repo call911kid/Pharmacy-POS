@@ -2,15 +2,8 @@ using BLL.DTOs.Invoice;
 using BLL.Interfaces;
 using DAL.Interfaces;
 using DAL.Models;
-using DAL.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BLL.Exceptions;
 using BLL.DTOs.InvoiceItem;
-using System.Net.NetworkInformation;
 using Common.Enums;
 using BLL.Utils;
 namespace BLL.Services
@@ -26,6 +19,18 @@ namespace BLL.Services
 
         public async Task<bool> CreateSaleInvoiceAsync(CreateInvoiceDto invoiceDto)
         {
+            ArgumentNullException.ThrowIfNull(invoiceDto);
+
+            if (invoiceDto.InvoiceItems is null || invoiceDto.InvoiceItems.Count == 0)
+            {
+                throw new InvalidInvoiceStatusException("Invoice must contain at least one item.");
+            }
+
+            var customer = await _unitOfWork.Customers.GetByIdAsync(invoiceDto.CustomerId);
+            if (customer is null)
+            {
+                throw new EntityNotFoundException($"Customer '{invoiceDto.CustomerId}' was not found.");
+            }
 
             var invoice = new Invoice
             {
@@ -35,60 +40,69 @@ namespace BLL.Services
                 InvoiceItems = new List<InvoiceItem>(),
                 Barcode = BarcodeGenerator.GenerateInvoiceBarcode()
             };
-            var modifiedBatches = new List<(BatchItem batch, int subtractedQuantity)>();
+
             decimal totalInvoicePrice = 0;
+
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
             {
                 foreach (var itemDto in invoiceDto.InvoiceItems)
                 {
+                    if (itemDto.Quantity <= 0)
+                    {
+                        throw new InvalidInvoiceStatusException(
+                            $"Invoice item for batch '{itemDto.BatchItemId}' must have a quantity greater than zero.");
+                    }
+
                     var batchItem = await _unitOfWork.BatchItems.GetByIdAsync(itemDto.BatchItemId);
-                    
-                    if (batchItem == null) throw new Exception($"Batch {itemDto.BatchItemId} not found");
-                    if (batchItem.QuantityRemaining < itemDto.Quantity) throw new InsufficientStockException($"Batch {itemDto.BatchItemId} does not have enough quantity. Requested: {itemDto.Quantity}, Available: {batchItem.QuantityRemaining}");
+
+                    if (batchItem == null)
+                    {
+                        throw new BatchNotFoundException($"Batch item '{itemDto.BatchItemId}' was not found.");
+                    }
+
+                    if (batchItem.ProductId != itemDto.ProductId)
+                    {
+                        throw new EntityNotFoundException(
+                            $"Batch item '{itemDto.BatchItemId}' does not belong to product '{itemDto.ProductId}'.");
+                    }
+
+                    if (batchItem.QuantityRemaining < itemDto.Quantity)
+                    {
+                        throw new InsufficientStockException(
+                            $"Batch item '{itemDto.BatchItemId}' does not have enough quantity. Requested: {itemDto.Quantity}, Available: {batchItem.QuantityRemaining}.");
+                    }
 
                     decimal itemPrice = batchItem.MandatorySellingPrice;
                     totalInvoicePrice += itemDto.Quantity * itemPrice;
 
                     batchItem.QuantityRemaining -= itemDto.Quantity;
-                    modifiedBatches.Add((batchItem, itemDto.Quantity));
                     _unitOfWork.BatchItems.Update(batchItem);
 
                     invoice.InvoiceItems.Add(new InvoiceItem
                     {
                         BatchItemId = itemDto.BatchItemId,
                         Quantity = itemDto.Quantity,
-                        OriginalPrice = itemPrice
+                        OriginalPrice = itemPrice,
+                        DiscountedPrice = itemPrice
                     });
                 }
 
-                
                 invoice.TotalAmount = totalInvoicePrice;
                 invoice.TotalDiscount = 0m;
                 invoice.NetAmount = totalInvoicePrice;
 
-                
-                foreach (var ii in invoice.InvoiceItems)
-                {
-                    ii.DiscountedPrice = ii.OriginalPrice;
-                }
-
                 await _unitOfWork.Invoices.AddAsync(invoice);
                 var result = await _unitOfWork.SaveChangesAsync();
+                await transaction.CommitAsync();
                 return result > 0;
             }
-            catch (Exception ex)
+            catch
             {
-                foreach (var track in modifiedBatches)
-                {
-                    track.batch.QuantityRemaining += track.subtractedQuantity;
-                    _unitOfWork.BatchItems.Update(track.batch);
-                }
-
-                await _unitOfWork.SaveChangesAsync();
-                throw new Exception("Operation failed. Changes were rolled back manually.", ex);
+                await transaction.RollbackAsync();
+                throw;
             }
-            
         }
 
         public async Task<IEnumerable<InvoiceDto>> GetCustomerInvoicesAsync(int customerId)
@@ -99,6 +113,9 @@ namespace BLL.Services
             {
                 Id = inv.Id,
                 CustomerId = inv.CustomerId,
+                CustomerName = inv.Customer?.Name ?? string.Empty,
+                CustomerPhone = inv.Customer?.Phone ?? string.Empty,
+                Barcode = inv.Barcode ?? string.Empty,
                 Status = inv.Status.ToString(),
                 InvoiceDate = inv.InvoiceDate,
                 TotalAmount = inv.TotalAmount,
@@ -107,6 +124,7 @@ namespace BLL.Services
                     Id = ii.Id,
                     InvoiceId = ii.InvoiceId,
                     ProductId = ii.BatchItem?.ProductId ?? 0,
+                    ProductName = ii.BatchItem?.Product?.Name ?? $"Product #{ii.BatchItem?.ProductId ?? 0}",
                     Quantity = ii.Quantity,
                     UnitPrice = ii.OriginalPrice
                 }).ToList() ?? new List<InvoiceItemDto>()

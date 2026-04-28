@@ -6,13 +6,15 @@ namespace BLL.Interfaces
 {
     public interface ICustomerService
     {
+        Task<IReadOnlyList<CustomerDto>> GetAllCustomersAsync();
+
         Task<IReadOnlyList<Customer?>> GetCustomersByBatchItemAsync(int batchItemId);
 
         Task<IReadOnlyList<Invoice?>> GetInvoiceHistoryAsync(int customerId);
 
         Task<CustomerValidationResultDto> ValidateForSaleAsync(int customerId);
 
-        Task<CustomerDto?> CreateCustomerAsync(CreateCustomerByPhoneDto dto);
+        Task<CustomerDto> CreateCustomerAsync(CreateCustomerByPhoneDto dto);
 
         Task<CustomerDto?> GetCustomerByPhoneAsync(string phone);
 

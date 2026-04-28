@@ -28,8 +28,10 @@ namespace BLL.Services
                 Id = batch.Id,
                 SupplierId = batch.SupplierId,
                 SupplierName = batch.Supplier.Name,
-                PurchaseDate = batch.PurchaseDate
-                
+                PurchaseDate = batch.PurchaseDate,
+                ItemsCount = batch.BatchItems.Count,
+                TotalQuantityReceived = batch.BatchItems.Sum(item => item.QuantityReceived),
+                TotalQuantityRemaining = batch.BatchItems.Sum(item => item.QuantityRemaining)
             }).ToList();
         }
 
@@ -50,6 +52,7 @@ namespace BLL.Services
                     Id = item.Id,
                     BatchId = item.BatchId,
                     ProductId = item.ProductId,
+                    ProductName = item.Product?.Name,
                     QuantityReceived = item.QuantityReceived,
                     QuantityRemaining = item.QuantityRemaining,
                     ExpirationDate = item.ExpirationDate,
@@ -146,7 +149,10 @@ namespace BLL.Services
             {
                 Id = batch.Id,
                 SupplierId = batch.SupplierId,
-                PurchaseDate = batch.PurchaseDate
+                PurchaseDate = batch.PurchaseDate,
+                ItemsCount = batch.BatchItems.Count,
+                TotalQuantityReceived = batch.BatchItems.Sum(item => item.QuantityReceived),
+                TotalQuantityRemaining = batch.BatchItems.Sum(item => item.QuantityRemaining)
             }).ToList();
         }
 
